@@ -352,6 +352,51 @@
 
     #printSheet { display: none; }
 
+    #printSheet.pdf-export {
+      position: fixed;
+      z-index: -1;
+      left: -10000px;
+      top: 0;
+      display: block;
+      width: 760px;
+      padding: 42px;
+      color: #17241f;
+      background: white;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    #printSheet.pdf-export h1 {
+      margin: 0 0 12px;
+      color: var(--green-dark);
+      font-size: 30px;
+    }
+
+    #printSheet.pdf-export h2 {
+      margin: 25px 0 8px;
+      color: var(--green-dark);
+      font-size: 20px;
+      break-after: avoid;
+    }
+
+    #printSheet.pdf-export .print-box {
+      margin: 8px 0;
+      padding: 12px 15px;
+      border: 1px solid #aebbb5;
+      border-radius: 8px;
+      break-inside: avoid;
+    }
+
+    #pdfStatus {
+      flex-basis: 100%;
+      min-height: 1.7em;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    #pdfStatus.is-error { color: #a33b27; }
+
     @media (max-width: 640px) {
       .shell { width: min(100% - 16px, 920px); margin-top: 8px; }
       .hero { border-radius: 20px 20px 0 0; padding: 26px 22px; }
@@ -528,8 +573,9 @@
           </div>
 
           <div class="final-actions">
-            <button class="btn btn-orange" type="button" id="printButton">印刷・PDF保存</button>
+            <button class="btn btn-orange" type="button" id="printButton">PDFを保存</button>
             <button class="btn btn-quiet" type="button" id="refreshResult">まとめを更新</button>
+            <p id="pdfStatus" aria-live="polite"></p>
           </div>
           <p class="saved" id="savedMessage">入力すると自動保存されます。</p>
           <button class="reset-link" type="button" id="resetButton">すべての回答を消す</button>
@@ -545,6 +591,7 @@
 
   <section id="printSheet" aria-hidden="true"></section>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     (() => {
       const STORAGE_KEY = "kazoku-bichiku-work-v1";
@@ -701,9 +748,43 @@
       form.addEventListener("input", scheduleSave);
       form.addEventListener("change", scheduleSave);
       document.getElementById("refreshResult").addEventListener("click", buildResult);
-      document.getElementById("printButton").addEventListener("click", () => {
+      document.getElementById("printButton").addEventListener("click", async () => {
+        const button = document.getElementById("printButton");
+        const status = document.getElementById("pdfStatus");
+        const printSheet = document.getElementById("printSheet");
         buildResult();
-        window.print();
+        button.disabled = true;
+        status.classList.remove("is-error");
+        status.textContent = "PDFを作成しています…";
+        printSheet.classList.add("pdf-export");
+        try {
+          if (typeof window.html2pdf !== "function") {
+            throw new Error("PDF library unavailable");
+          }
+          await window.html2pdf().set({
+            margin: 10,
+            filename: "家族で使える備蓄ワーク.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+              scale: 2,
+              useCORS: true,
+              backgroundColor: "#ffffff"
+            },
+            jsPDF: {
+              unit: "mm",
+              format: "a4",
+              orientation: "portrait"
+            },
+            pagebreak: { mode: ["css", "legacy"] }
+          }).from(printSheet).save();
+          status.textContent = "PDFを保存しました。";
+        } catch (_) {
+          status.classList.add("is-error");
+          status.textContent = "PDFを作れませんでした。ChromeまたはSafariで開いて、もう一度お試しください。";
+        } finally {
+          printSheet.classList.remove("pdf-export");
+          button.disabled = false;
+        }
       });
       document.getElementById("resetButton").addEventListener("click", () => {
         if (!confirm("すべての回答を消しますか？")) return;

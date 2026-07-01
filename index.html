@@ -573,7 +573,7 @@
           </div>
 
           <div class="final-actions">
-            <button class="btn btn-orange" type="button" id="printButton">PDFを保存</button>
+            <button class="btn btn-orange" type="button" id="printButton">PDFを開く・保存</button>
             <button class="btn btn-quiet" type="button" id="refreshResult">まとめを更新</button>
             <p id="pdfStatus" aria-live="polite"></p>
           </div>
@@ -761,7 +761,7 @@
           if (typeof window.html2pdf !== "function") {
             throw new Error("PDF library unavailable");
           }
-          await window.html2pdf().set({
+          const pdfWorker = window.html2pdf().set({
             margin: 10,
             filename: "家族で使える備蓄ワーク.pdf",
             image: { type: "jpeg", quality: 0.98 },
@@ -776,8 +776,10 @@
               orientation: "portrait"
             },
             pagebreak: { mode: ["css", "legacy"] }
-          }).from(printSheet).save();
-          status.textContent = "PDFを保存しました。";
+          }).from(printSheet).toPdf();
+          const pdfUrl = await pdfWorker.outputPdf("bloburl");
+          status.textContent = "PDFを開きます。開いた画面から保存できます。";
+          window.location.href = pdfUrl;
         } catch (_) {
           status.classList.add("is-error");
           status.textContent = "PDFを作れませんでした。ChromeまたはSafariで開いて、もう一度お試しください。";

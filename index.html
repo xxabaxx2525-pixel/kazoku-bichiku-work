@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>家族で使える備蓄ワーク</title>
+  <style>
+    :root {
+      --ink: #26342f;
+      --muted: #68756f;
+      --paper: #fffdf8;
+      --cream: #f5f0e4;
+      --green: #28765b;
+      --green-dark: #165340;
+      --green-soft: #e6f2ec;
+      --orange: #e88a3d;
+      --orange-soft: #fff0df;
+      --line: #d9ded8;
+      --shadow: 0 18px 50px rgba(39, 67, 56, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 8% 5%, rgba(232,138,61,.12), transparent 24rem),
+        radial-gradient(circle at 95% 20%, rgba(40,118,91,.12), transparent 25rem),
+        var(--cream);
+      font-family: "Yu Gothic", "Hiragino Sans", system-ui, sans-serif;
+      line-height: 1.7;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button, label { -webkit-tap-highlight-color: transparent; }
+
+    .shell {
+      width: min(920px, calc(100% - 28px));
+      margin: 28px auto 60px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 34px clamp(24px, 5vw, 52px);
+      border-radius: 28px 28px 0 0;
+      color: white;
+      background: var(--green-dark);
+    }
+
+    .hero::after {
+      content: "＋";
+      position: absolute;
+      right: 5%;
+      top: -36px;
+      font-size: 180px;
+      font-weight: 900;
+      line-height: 1;
+      color: rgba(255,255,255,.07);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 8px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      color: #ffd19e;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 650px;
+      font-size: clamp(28px, 5vw, 47px);
+      line-height: 1.22;
+      letter-spacing: .02em;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: 15px 0 0;
+      color: rgba(255,255,255,.86);
+    }
+
+    .privacy {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 5px 12px;
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 999px;
+      font-size: 13px;
+    }
+
+    .workspace {
+      padding: clamp(20px, 5vw, 48px);
+      border-radius: 0 0 28px 28px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 9px;
+      margin-bottom: 28px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8ebe6;
+    }
+
+    .progress-bar {
+      width: 20%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--orange), #f1b35b);
+      transition: width .3s ease;
+    }
+
+    .step { display: none; animation: appear .25s ease; }
+    .step.active { display: block; }
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-kicker {
+      margin: 0 0 5px;
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: clamp(24px, 4vw, 34px);
+      line-height: 1.35;
+    }
+
+    h3 {
+      margin: 30px 0 8px;
+      font-size: 19px;
+    }
+
+    .lead { margin: 0 0 24px; color: var(--muted); }
+
+    .number-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0 28px;
+      padding: 17px 20px;
+      border-radius: 16px;
+      background: var(--green-soft);
+      font-weight: 800;
+    }
+
+    input[type="number"] {
+      width: 78px;
+      padding: 8px 10px;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      text-align: center;
+      background: white;
+      outline: none;
+    }
+
+    input[type="number"]:focus, input[type="text"]:focus, textarea:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(40,118,91,.12);
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 14px 0 20px;
+    }
+
+    .choice {
+      position: relative;
+      display: flex;
+      align-items: center;
+      min-height: 56px;
+      padding: 12px 14px;
+      border: 2px solid var(--line);
+      border-radius: 14px;
+      background: white;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .choice:hover { border-color: #9eb7aa; transform: translateY(-1px); }
+    .choice:has(input:checked) {
+      border-color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .choice input {
+      width: 19px;
+      height: 19px;
+      margin: 0 10px 0 0;
+      accent-color: var(--green);
+      flex: 0 0 auto;
+    }
+
+    .other-input, textarea, .pair input {
+      width: 100%;
+      border: 2px solid var(--line);
+      border-radius: 13px;
+      background: white;
+      outline: none;
+    }
+
+    .other-input { padding: 12px 14px; }
+    textarea {
+      min-height: 104px;
+      padding: 13px 15px;
+      resize: vertical;
+    }
+
+    .note {
+      margin: 18px 0;
+      padding: 17px 18px;
+      border-left: 5px solid var(--orange);
+      border-radius: 0 14px 14px 0;
+      background: var(--orange-soft);
+    }
+
+    .note strong { display: block; }
+
+    .pair-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: 38px 1fr 32px 1fr;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+    }
+
+    .pair-number {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      color: white;
+      background: var(--green);
+      font-weight: 900;
+    }
+
+    .plus {
+      color: var(--orange);
+      font-size: 25px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .pair input { min-width: 0; padding: 11px 12px; }
+
+    .example {
+      margin: 16px 0;
+      padding: 15px 18px;
+      border-radius: 14px;
+      background: #f2f3ef;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 34px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+    }
+
+    .btn {
+      min-height: 50px;
+      padding: 11px 20px;
+      border: 0;
+      border-radius: 13px;
+      cursor: pointer;
+      font-weight: 900;
+      transition: .18s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { color: white; background: var(--green); }
+    .btn-primary:hover { background: var(--green-dark); }
+    .btn-quiet { color: var(--ink); background: #eceeea; }
+    .btn-orange { color: #542c08; background: #ffc26e; }
+    .btn:disabled { visibility: hidden; }
+
+    .result-card {
+      margin: 20px 0;
+      padding: 24px;
+      border: 2px solid #b5d4c4;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #eff8f3, white);
+    }
+
+    .result-card h3 { margin: 0 0 12px; color: var(--green-dark); }
+    .result-list { margin: 10px 0 0; padding-left: 1.2em; }
+    .result-list li { margin: 7px 0; }
+
+    .action-result {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 14px;
+      background: var(--orange-soft);
+      font-weight: 800;
+    }
+
+    .final-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .saved {
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .reset-link {
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    #printSheet { display: none; }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100% - 16px, 920px); margin-top: 8px; }
+      .hero { border-radius: 20px 20px 0 0; padding: 26px 22px; }
+      .workspace { border-radius: 0 0 20px 20px; padding: 24px 18px; }
+      .choices { grid-template-columns: 1fr; }
+      .pair { grid-template-columns: 34px 1fr; }
+      .pair .plus { grid-column: 2; line-height: 1; text-align: left; }
+      .pair input:last-child { grid-column: 2; }
+      .nav .btn { flex: 1; padding-inline: 12px; }
+    }
+
+    @media print {
+      @page { size: A4; margin: 14mm; }
+      body { background: white; color: #111; font-size: 10.5pt; }
+      .shell { display: none; }
+      #printSheet { display: block; }
+      #printSheet h1 { color: #174d3b; font-size: 22pt; }
+      #printSheet h2 { margin: 22px 0 6px; color: #174d3b; font-size: 14pt; }
+      #printSheet ul { margin-top: 5px; }
+      #printSheet .print-box {
+        margin: 8px 0;
+        padding: 10px 13px;
+        border: 1px solid #aaa;
+        border-radius: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">わが家の防災ワーク</p>
+      <h1>家族で使える<br>備蓄をつくろう</h1>
+      <p>たくさん買うだけではなく、疲れている時でも、家族が迷わず食べられる形を考えるワークです。</p>
+      <span class="privacy">入力内容はこの端末の中だけに保存されます</span>
+    </header>
+
+    <section class="workspace">
+      <div class="progress-label">
+        <span id="stepLabel">STEP 1 / 5</span>
+        <span id="stepName">いつもの食品</span>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <form id="workForm">
+        <section class="step active" data-step="0">
+          <p class="step-kicker">STEP 1</p>
+          <h2>普段よく食べるもの</h2>
+          <p class="lead">「備蓄専用品」でなくても大丈夫。普段から食べて、なくなると買い足す、日持ちのするものを選びましょう。</p>
+
+          <div class="number-row">
+            <label for="familyCount">一緒に備える家族は</label>
+            <input id="familyCount" name="familyCount" type="number" min="1" max="20" value="2">
+            <span>人</span>
+          </div>
+
+          <div class="choices" id="foodChoices">
+            <label class="choice"><input type="checkbox" name="foods" value="カップ麺">カップ麺</label>
+            <label class="choice"><input type="checkbox" name="foods" value="レトルトカレー">レトルトカレー</label>
+            <label class="choice"><input type="checkbox" name="foods" value="パスタ">パスタ・麺類</label>
+            <label class="choice"><input type="checkbox" name="foods" value="缶詰">缶詰</label>
+            <label class="choice"><input type="checkbox" name="foods" value="お菓子">お菓子</label>
+            <label class="choice"><input type="checkbox" name="foods" value="スープ">スープ</label>
+            <label class="choice"><input type="checkbox" name="foods" value="シリアル">シリアル</label>
+            <label class="choice"><input type="checkbox" name="foods" value="ごはんパック">ごはんパック</label>
+          </div>
+          <label for="otherFood"><strong>その他</strong></label>
+          <input class="other-input" id="otherFood" name="otherFood" type="text" placeholder="例：乾パン、フルーツ缶">
+        </section>
+
+        <section class="step" data-step="1">
+          <p class="step-kicker">STEP 2</p>
+          <h2>3日間を想像してみる</h2>
+          <p class="lead">選んだ食品だけで、家族が3日続けて過ごせそうでしょうか。</p>
+
+          <div class="choices">
+            <label class="choice"><input type="radio" name="threeDays" value="十分そう">十分そう</label>
+            <label class="choice"><input type="radio" name="threeDays" value="少し足りない">少し足りない</label>
+            <label class="choice"><input type="radio" name="threeDays" value="分からない">まだ分からない</label>
+          </div>
+
+          <h3>食べ物以外も確認</h3>
+          <div class="choices">
+            <label class="choice"><input type="checkbox" name="essentials" value="飲み水">飲み水がある</label>
+            <label class="choice"><input type="checkbox" name="essentials" value="加熱手段">電気・ガスが止まった時の加熱手段がある</label>
+            <label class="choice"><input type="checkbox" name="essentials" value="道具">缶切りなど必要な道具がある</label>
+            <label class="choice"><input type="checkbox" name="essentials" value="加熱不要">加熱せず食べられるものがある</label>
+          </div>
+
+          <h3>不足しそうなもの</h3>
+          <textarea name="shortage" placeholder="例：野菜が少ない、水が足りないかもしれない"></textarea>
+
+          <h3>家族に合わせた配慮</h3>
+          <p class="lead">アレルギー、乳幼児、高齢者、持病・服薬など、食事で気をつけたいことがあれば書きましょう。</p>
+          <textarea name="care" placeholder="特になければ空欄で大丈夫です"></textarea>
+        </section>
+
+        <section class="step" data-step="2">
+          <p class="step-kicker">STEP 3</p>
+          <h2>わが家の「ニコイチ」</h2>
+          <p class="lead">よく食べるものに、一緒に使いたいものを組み合わせてみましょう。まずは1組だけでも十分です。</p>
+          <div class="example">例：カップ麺 ＋ 乾燥野菜 ／ パスタ ＋ サバ缶 ／ レトルトカレー ＋ 蒸し大豆</div>
+
+          <div class="pair-list">
+            <div class="pair">
+              <span class="pair-number">1</span>
+              <input name="pair1a" type="text" placeholder="カップ麺">
+              <span class="plus">＋</span>
+              <input name="pair1b" type="text" placeholder="乾燥野菜">
+            </div>
+            <div class="pair">
+              <span class="pair-number">2</span>
+              <input name="pair2a" type="text" placeholder="パスタ">
+              <span class="plus">＋</span>
+              <input name="pair2b" type="text" placeholder="サバ缶">
+            </div>
+            <div class="pair">
+              <span class="pair-number">3</span>
+              <input name="pair3a" type="text" placeholder="レトルトカレー">
+              <span class="plus">＋</span>
+              <input name="pair3b" type="text" placeholder="蒸し大豆">
+            </div>
+          </div>
+        </section>
+
+        <section class="step" data-step="3">
+          <p class="step-kicker">STEP 4</p>
+          <h2>家族が迷わず使える？</h2>
+          <p class="lead">「自分がいなくても使えるか」を想像して、今の状態に一番近いものを選びましょう。</p>
+
+          <div class="choices">
+            <label class="choice"><input type="radio" name="familyKnows" value="家族も知っている">家族も知っている</label>
+            <label class="choice"><input type="radio" name="familyKnows" value="説明すれば分かると思う">説明すれば分かると思う</label>
+            <label class="choice"><input type="radio" name="familyKnows" value="自分しか知らない">自分しか知らない</label>
+            <label class="choice"><input type="radio" name="familyKnows" value="分からない">分からない</label>
+          </div>
+
+          <h3>実際に使える状態を確認</h3>
+          <div class="choices">
+            <label class="choice"><input type="checkbox" name="usable" value="置き場所">家族が置き場所を知っている</label>
+            <label class="choice"><input type="checkbox" name="usable" value="見て分かる">袋や箱を見れば組み合わせが分かる</label>
+            <label class="choice"><input type="checkbox" name="usable" value="停電時">電気・ガスがなくても食べられる</label>
+            <label class="choice"><input type="checkbox" name="usable" value="期限">賞味期限を確認できる</label>
+          </div>
+
+          <div class="note">
+            <strong>セットにすると、もっと迷いにくくなります</strong>
+            朝ごはんセット、1食分セット、お湯だけセットなど、まとめておく方法もあります。
+          </div>
+          <label for="setIdea"><strong>わが家で作れそうなセット</strong></label>
+          <textarea id="setIdea" name="setIdea" placeholder="例：袋に「お湯だけセット」と書いて、カップ麺と乾燥野菜をまとめる"></textarea>
+        </section>
+
+        <section class="step" data-step="4">
+          <p class="step-kicker">STEP 5</p>
+          <h2>今日の一歩</h2>
+          <p class="lead">今日または近いうちにできそうなことを、1つ選びましょう。</p>
+
+          <div class="choices">
+            <label class="choice"><input type="radio" name="nextAction" value="よく食べるものを書き出す">よく食べるものを書き出す</label>
+            <label class="choice"><input type="radio" name="nextAction" value="ニコイチを1つ作る">ニコイチを1つ作る</label>
+            <label class="choice"><input type="radio" name="nextAction" value="セットを1つ作る">セットを1つ作る</label>
+            <label class="choice"><input type="radio" name="nextAction" value="家族に伝える">家族に伝える</label>
+            <label class="choice"><input type="radio" name="nextAction" value="置き場所を見直す">置き場所を見直す</label>
+            <label class="choice"><input type="radio" name="nextAction" value="その他">その他</label>
+          </div>
+          <input class="other-input" name="otherAction" type="text" placeholder="その他を選んだ場合はこちらに入力">
+
+          <div class="result-card" id="resultCard">
+            <h3>わが家の備蓄ワークまとめ</h3>
+            <div id="resultBody">ここまでの回答が表示されます。</div>
+          </div>
+
+          <div class="final-actions">
+            <button class="btn btn-orange" type="button" id="printButton">印刷・PDF保存</button>
+            <button class="btn btn-quiet" type="button" id="refreshResult">まとめを更新</button>
+          </div>
+          <p class="saved" id="savedMessage">入力すると自動保存されます。</p>
+          <button class="reset-link" type="button" id="resetButton">すべての回答を消す</button>
+        </section>
+
+        <nav class="nav">
+          <button class="btn btn-quiet" id="prevButton" type="button" disabled>戻る</button>
+          <button class="btn btn-primary" id="nextButton" type="button">次へ</button>
+        </nav>
+      </form>
+    </section>
+  </main>
+
+  <section id="printSheet" aria-hidden="true"></section>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = "kazoku-bichiku-work-v1";
+      const form = document.getElementById("workForm");
+      const steps = [...document.querySelectorAll(".step")];
+      const names = ["いつもの食品", "3日間の確認", "ニコイチ", "家族が使える？", "今日の一歩"];
+      const progressBar = document.getElementById("progressBar");
+      const stepLabel = document.getElementById("stepLabel");
+      const stepName = document.getElementById("stepName");
+      const prevButton = document.getElementById("prevButton");
+      const nextButton = document.getElementById("nextButton");
+      const resultBody = document.getElementById("resultBody");
+      const savedMessage = document.getElementById("savedMessage");
+      let current = 0;
+      let saveTimer;
+
+      const selected = (name) =>
+        [...form.querySelectorAll(`[name="${name}"]:checked`)].map(el => el.value);
+
+      const one = (name) => form.querySelector(`[name="${name}"]:checked`)?.value || "";
+      const value = (name) => form.elements[name]?.value?.trim() || "";
+      const esc = (text) => String(text || "").replace(/[&<>"']/g, ch => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      })[ch]);
+
+      function serialize() {
+        const data = {};
+        new FormData(form).forEach((val, key) => {
+          if (data[key]) data[key] = [].concat(data[key], val);
+          else data[key] = val;
+        });
+        return data;
+      }
+
+      function restore() {
+        try {
+          const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+          Object.entries(data).forEach(([name, saved]) => {
+            const fields = [...form.querySelectorAll(`[name="${CSS.escape(name)}"]`)];
+            if (!fields.length) return;
+            const values = [].concat(saved);
+            fields.forEach(field => {
+              if (field.type === "checkbox" || field.type === "radio") {
+                field.checked = values.includes(field.value);
+              } else {
+                field.value = saved;
+              }
+            });
+          });
+        } catch (_) {}
+      }
+
+      function save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize()));
+          savedMessage.textContent = "この端末に自動保存しました。";
+        } catch (_) {
+          savedMessage.textContent = "保存できませんでした。印刷・PDF保存をご利用ください。";
+        }
+      }
+
+      function scheduleSave() {
+        clearTimeout(saveTimer);
+        savedMessage.textContent = "保存中…";
+        saveTimer = setTimeout(save, 250);
+        if (current === 4) buildResult();
+      }
+
+      function showStep(index) {
+        current = Math.max(0, Math.min(steps.length - 1, index));
+        steps.forEach((step, i) => step.classList.toggle("active", i === current));
+        stepLabel.textContent = `STEP ${current + 1} / ${steps.length}`;
+        stepName.textContent = names[current];
+        progressBar.style.width = `${((current + 1) / steps.length) * 100}%`;
+        prevButton.disabled = current === 0;
+        nextButton.style.visibility = current === steps.length - 1 ? "hidden" : "visible";
+        if (current === 4) buildResult();
+        document.querySelector(".workspace").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function getPairs() {
+        return [1, 2, 3].map(n => [value(`pair${n}a`), value(`pair${n}b`)])
+          .filter(pair => pair[0] || pair[1]);
+      }
+
+      function buildResult() {
+        const family = value("familyCount") || "—";
+        const foods = [...selected("foods"), value("otherFood")].filter(Boolean);
+        const pairs = getPairs();
+        const usable = selected("usable");
+        const action = one("nextAction") === "その他"
+          ? (value("otherAction") || "その他の一歩を考える")
+          : (one("nextAction") || "まだ選ばれていません");
+        const essentials = selected("essentials");
+        const checkItems = [
+          ["飲み水", "飲み水"],
+          ["加熱手段", "停電時の加熱手段"],
+          ["道具", "必要な道具"],
+          ["加熱不要", "加熱せず食べられる食品"]
+        ];
+        const remaining = checkItems.filter(([key]) => !essentials.includes(key)).map(([, label]) => label);
+
+        const pairHtml = pairs.length
+          ? pairs.map(p => `<li>${esc(p[0] || "（未記入）")} ＋ ${esc(p[1] || "（未記入）")}</li>`).join("")
+          : "<li>まだ作られていません。まずは1組からで大丈夫です。</li>";
+
+        resultBody.innerHTML = `
+          <p><strong>${esc(family)}人分</strong>の備えを考えました。</p>
+          <p>普段よく食べるもの：${foods.length ? foods.map(esc).join("、") : "まだ選ばれていません"}</p>
+          <p><strong>わが家のニコイチ（${pairs.length}組）</strong></p>
+          <ul class="result-list">${pairHtml}</ul>
+          <p>家族の状態：${esc(one("familyKnows") || "まだ選ばれていません")}</p>
+          <p>使いやすさチェック：${usable.length} / 4</p>
+          ${remaining.length ? `<p>これから確認したいこと：${remaining.map(esc).join("、")}</p>` : "<p>食べ物以外の備えも、ひと通り確認できました。</p>"}
+          <div class="action-result">今日の一歩：${esc(action)}</div>
+        `;
+        buildPrintSheet({ family, foods, pairs, action, usable, remaining });
+      }
+
+      function buildPrintSheet(summary) {
+        const shortage = value("shortage") || "記入なし";
+        const care = value("care") || "記入なし";
+        const setIdea = value("setIdea") || "記入なし";
+        const pairLines = summary.pairs.length
+          ? summary.pairs.map(p => `<li>${esc(p[0] || "（未記入）")} ＋ ${esc(p[1] || "（未記入）")}</li>`).join("")
+          : "<li>記入なし</li>";
+        document.getElementById("printSheet").innerHTML = `
+          <h1>家族で使える備蓄ワーク</h1>
+          <p>家族：${esc(summary.family)}人　／　作成日：${new Date().toLocaleDateString("ja-JP")}</p>
+          <h2>普段よく食べるもの</h2>
+          <div class="print-box">${summary.foods.length ? summary.foods.map(esc).join("、") : "記入なし"}</div>
+          <h2>3日間の確認</h2>
+          <div class="print-box">
+            <p>3日分：${esc(one("threeDays") || "未回答")}</p>
+            <p>不足しそうなもの：${esc(shortage)}</p>
+            <p>家族への配慮：${esc(care)}</p>
+          </div>
+          <h2>わが家のニコイチ</h2>
+          <div class="print-box"><ul>${pairLines}</ul></div>
+          <h2>家族が使える状態</h2>
+          <div class="print-box">
+            <p>${esc(one("familyKnows") || "未回答")}</p>
+            <p>できていること：${summary.usable.length ? summary.usable.map(esc).join("、") : "記入なし"}</p>
+            <p>作れそうなセット：${esc(setIdea)}</p>
+          </div>
+          <h2>今日の一歩</h2>
+          <div class="print-box"><strong>${esc(summary.action)}</strong></div>
+          <p>自分だけが分かる備蓄から、家族みんなが使える備蓄へ。まずは1つから始めましょう。</p>
+        `;
+      }
+
+      nextButton.addEventListener("click", () => showStep(current + 1));
+      prevButton.addEventListener("click", () => showStep(current - 1));
+      form.addEventListener("input", scheduleSave);
+      form.addEventListener("change", scheduleSave);
+      document.getElementById("refreshResult").addEventListener("click", buildResult);
+      document.getElementById("printButton").addEventListener("click", () => {
+        buildResult();
+        window.print();
+      });
+      document.getElementById("resetButton").addEventListener("click", () => {
+        if (!confirm("すべての回答を消しますか？")) return;
+        form.reset();
+        form.elements.familyCount.value = 2;
+        localStorage.removeItem(STORAGE_KEY);
+        buildResult();
+        savedMessage.textContent = "回答を消しました。";
+      });
+
+      restore();
+      showStep(0);
+    })();
+  </script>
+</body>
+</html>

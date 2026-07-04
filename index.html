@@ -350,7 +350,10 @@
       text-decoration: underline;
     }
 
-    #printSheet { display: none; }
+    #printSheet {
+      display: block;
+      visibility: visible;
+    }
 
     #printSheet.pdf-preview {
       position: relative;
@@ -397,6 +400,11 @@
     #pdfStatus.is-error { color: #a33b27; }
 
     .print-preview {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      visibility: visible;
+      display: block;
       width: min(840px, calc(100% - 20px));
       margin: 24px auto 60px;
       padding: 20px;
@@ -405,7 +413,11 @@
       box-shadow: var(--shadow);
     }
 
-    .print-preview[hidden] { display: none; }
+    .print-preview.is-visible {
+      position: relative;
+      left: auto;
+      top: auto;
+    }
 
     .preview-actions {
       width: min(760px, 100%);
@@ -455,6 +467,10 @@
       .shell { display: none; }
       #printPreview {
         display: block !important;
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
+        visibility: visible !important;
         width: auto;
         margin: 0;
         padding: 0;
@@ -476,7 +492,7 @@
   </style>
 </head>
 <body>
-  <!-- pdf-preview-fallback-v11 -->
+  <!-- pdf-preview-fallback-v12 -->
   <main class="shell">
     <header class="hero">
       <p class="eyebrow">わが家の防災ワーク</p>
@@ -640,7 +656,7 @@
     </section>
   </main>
 
-  <section class="print-preview" id="printPreview" hidden>
+  <section class="print-preview" id="printPreview">
     <div class="preview-actions">
       <strong>PDFに保存する内容（プレビュー）</strong>
       <p id="previewGuide">回答内容を描画して、自動PDFを作成しています。</p>
@@ -889,7 +905,7 @@
         autoPdfReady.hidden = true;
         printFallbackGroup.hidden = true;
         pdfErrorDetail.textContent = "";
-        printPreview.hidden = false;
+        printPreview.classList.add("is-visible");
         try {
           const { rect, textLength } = await waitForRenderedPreview();
           previewSize.textContent =
@@ -900,11 +916,38 @@
             throw new Error("自動PDFライブラリを読み込めませんでした");
           }
 
+          // html2canvasを呼ぶ直前にも、描画対象が0×0でないことを確認する。
+          const captureRect = printSheet.getBoundingClientRect();
+          const captureWidth = Math.ceil(
+            Math.max(captureRect.width, printSheet.scrollWidth)
+          );
+          const captureHeight = Math.ceil(
+            Math.max(captureRect.height, printSheet.scrollHeight)
+          );
+          if (
+            captureRect.width < 100 ||
+            captureRect.height < 100 ||
+            captureWidth < 100 ||
+            captureHeight < 100
+          ) {
+            throw new Error(
+              `html2canvas実行直前の描画対象が空です（` +
+              `rect ${Math.round(captureRect.width)}×${Math.round(captureRect.height)}px、` +
+              `scroll ${captureWidth}×${captureHeight}px）`
+            );
+          }
+          console.info("[PDF] html2canvas実行直前の描画対象", {
+            rectWidth: captureRect.width,
+            rectHeight: captureRect.height,
+            scrollWidth: captureWidth,
+            scrollHeight: captureHeight
+          });
+
           // 端末ごとのCanvas上限を超えないように、表示サイズから倍率を調整する。
           const safePixelBudget = 8000000;
           const scale = Math.max(
             1,
-            Math.min(2, Math.sqrt(safePixelBudget / (rect.width * rect.height)))
+            Math.min(2, Math.sqrt(safePixelBudget / (captureWidth * captureHeight)))
           );
           const options = {
             margin: 10,
@@ -914,7 +957,35 @@
               scale: Number(scale.toFixed(2)),
               useCORS: true,
               backgroundColor: "#ffffff",
-              logging: true
+              logging: true,
+              width: captureWidth,
+              height: captureHeight,
+              windowWidth: Math.max(window.innerWidth, captureWidth),
+              windowHeight: Math.max(window.innerHeight, captureHeight),
+              onclone: (clonedDocument) => {
+                const clonedPreview = clonedDocument.getElementById("printPreview");
+                const clonedSheet = clonedDocument.getElementById("printSheet");
+                if (clonedPreview) {
+                  Object.assign(clonedPreview.style, {
+                    display: "block",
+                    visibility: "visible",
+                    position: "static",
+                    left: "0",
+                    top: "0"
+                  });
+                }
+                if (clonedSheet) {
+                  Object.assign(clonedSheet.style, {
+                    display: "block",
+                    visibility: "visible",
+                    position: "relative",
+                    left: "0",
+                    top: "0",
+                    width: `${captureWidth}px`,
+                    maxWidth: "none"
+                  });
+                }
+              }
             },
             jsPDF: {
               unit: "mm",
@@ -925,11 +996,20 @@
           };
 
           previewGuide.textContent = "プレビューの描画内容を確認しています。";
-          const worker = window.html2pdf().set(options).from(printSheet).toCanvas();
-          const canvas = await worker.get("canvas").thenExternal(value => value);
-          const visiblePixels = inspectCanvas(canvas);
-
-          const pdfBlob = await worker
+          let visiblePixels = 0;
+          let canvasSize = "";
+          const pdfBlob = await window.html2pdf()
+            .set(options)
+            .from(printSheet)
+            .toCanvas()
+            .get("canvas", (canvas) => {
+              visiblePixels = inspectCanvas(canvas);
+              canvasSize = `${canvas.width}×${canvas.height}px`;
+              console.info("[PDF] Canvas描画確認", {
+                canvasSize,
+                visiblePixels
+              });
+            })
             .toPdf()
             .outputPdf("blob")
             .thenExternal(value => value);
@@ -943,7 +1023,8 @@
           currentPdfUrl = URL.createObjectURL(pdfBlob);
           pdfDownloadLink.href = currentPdfUrl;
           pdfResultInfo.textContent =
-            `${Math.ceil(pdfBlob.size / 1024)}KB、描画画素 ${visiblePixels}。プレビューと同じ回答内容です。`;
+            `${Math.ceil(pdfBlob.size / 1024)}KB、Canvas ${canvasSize}、描画画素 ${visiblePixels}。` +
+            "プレビューと同じ回答内容です。";
           autoPdfReady.hidden = false;
           previewGuide.textContent =
             "自動PDFを作成しました。下のボタンから保存してください。";
@@ -999,7 +1080,7 @@
       });
 
       document.getElementById("closePrintPreview").addEventListener("click", () => {
-        document.getElementById("printPreview").hidden = true;
+        document.getElementById("printPreview").classList.remove("is-visible");
         document.getElementById("pdfStatus").textContent = "";
       });
       document.getElementById("resetButton").addEventListener("click", () => {

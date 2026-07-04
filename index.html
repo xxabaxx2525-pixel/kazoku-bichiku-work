@@ -397,6 +397,41 @@
 
     #pdfStatus.is-error { color: #a33b27; }
 
+    .pdf-ready {
+      flex-basis: 100%;
+      padding: 16px;
+      border: 2px solid #b5d4c4;
+      border-radius: 14px;
+      background: var(--green-soft);
+    }
+
+    .pdf-ready[hidden] { display: none; }
+
+    .pdf-ready strong {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--green-dark);
+    }
+
+    .pdf-download-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 10px 17px;
+      border-radius: 11px;
+      color: white;
+      background: var(--green);
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .pdf-ready p {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     @media (max-width: 640px) {
       .shell { width: min(100% - 16px, 920px); margin-top: 8px; }
       .hero { border-radius: 20px 20px 0 0; padding: 26px 22px; }
@@ -573,9 +608,14 @@
           </div>
 
           <div class="final-actions">
-            <button class="btn btn-orange" type="button" id="printButton">PDFを開く・保存</button>
+            <button class="btn btn-orange" type="button" id="printButton">PDFを作成</button>
             <button class="btn btn-quiet" type="button" id="refreshResult">まとめを更新</button>
             <p id="pdfStatus" aria-live="polite"></p>
+            <div class="pdf-ready" id="pdfReady" hidden>
+              <strong>PDFを作成できました</strong>
+              <a class="pdf-download-link" id="pdfDownloadLink" href="#" download="家族で使える備蓄ワーク.pdf">PDFファイルを保存する</a>
+              <p>保存画面が出ない場合は、上の緑色のボタンを長押しして「ダウンロード」または「リンクを開く」を選んでください。</p>
+            </div>
           </div>
           <p class="saved" id="savedMessage">入力すると自動保存されます。</p>
           <button class="reset-link" type="button" id="resetButton">すべての回答を消す</button>
@@ -607,6 +647,7 @@
       const savedMessage = document.getElementById("savedMessage");
       let current = 0;
       let saveTimer;
+      let currentPdfUrl = "";
 
       const selected = (name) =>
         [...form.querySelectorAll(`[name="${name}"]:checked`)].map(el => el.value);
@@ -752,8 +793,11 @@
         const button = document.getElementById("printButton");
         const status = document.getElementById("pdfStatus");
         const printSheet = document.getElementById("printSheet");
+        const pdfReady = document.getElementById("pdfReady");
+        const pdfDownloadLink = document.getElementById("pdfDownloadLink");
         buildResult();
         button.disabled = true;
+        pdfReady.hidden = true;
         status.classList.remove("is-error");
         status.textContent = "PDFを作成しています…";
         printSheet.classList.add("pdf-export");
@@ -777,9 +821,12 @@
             },
             pagebreak: { mode: ["css", "legacy"] }
           }).from(printSheet).toPdf();
-          const pdfUrl = await pdfWorker.outputPdf("bloburl");
-          status.textContent = "PDFを開きます。開いた画面から保存できます。";
-          window.location.href = pdfUrl;
+          const pdfBlob = await pdfWorker.outputPdf("blob");
+          if (currentPdfUrl) URL.revokeObjectURL(currentPdfUrl);
+          currentPdfUrl = URL.createObjectURL(pdfBlob);
+          pdfDownloadLink.href = currentPdfUrl;
+          pdfReady.hidden = false;
+          status.textContent = "PDFを作成しました。下の緑色のボタンから保存してください。";
         } catch (_) {
           status.classList.add("is-error");
           status.textContent = "PDFを作れませんでした。ChromeまたはSafariで開いて、もう一度お試しください。";

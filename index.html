@@ -835,7 +835,7 @@
               orientation: "portrait"
             },
             pagebreak: { mode: ["css", "legacy"] }
-          }).from(printSheet).outputPdf("blob");
+          }).from(printSheet).toPdf().get("pdf").then(pdf => pdf.output("blob"));
           if (pdfBlob.size < 5000) {
             throw new Error("PDF file too small");
           }

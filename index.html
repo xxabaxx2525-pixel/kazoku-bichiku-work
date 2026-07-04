@@ -353,17 +353,19 @@
     #printSheet { display: none; }
 
     #printSheet.pdf-export {
-      position: fixed;
-      z-index: -1;
-      left: -10000px;
+      position: absolute;
+      z-index: 9999;
+      left: 0;
       top: 0;
       display: block;
       width: 760px;
+      max-width: none;
       padding: 42px;
       color: #17241f;
       background: white;
       font-size: 15px;
       line-height: 1.65;
+      pointer-events: none;
     }
 
     #printSheet.pdf-export h1 {
@@ -806,6 +808,10 @@
           if (typeof window.html2pdf !== "function") {
             throw new Error("PDF library unavailable");
           }
+          if (document.fonts?.ready) await document.fonts.ready;
+          await new Promise(resolve =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve))
+          );
           const pdfWorker = window.html2pdf().set({
             margin: 10,
             filename: "家族で使える備蓄ワーク.pdf",
@@ -821,8 +827,23 @@
               orientation: "portrait"
             },
             pagebreak: { mode: ["css", "legacy"] }
-          }).from(printSheet).toPdf();
-          const pdfBlob = await pdfWorker.outputPdf("blob");
+          }).from(printSheet).toCanvas();
+          const canvas = await pdfWorker.get("canvas");
+          const context = canvas.getContext("2d", { willReadFrequently: true });
+          const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+          let inkSamples = 0;
+          for (let i = 0; i < pixels.length; i += 400) {
+            if (pixels[i + 3] > 0 && pixels[i] + pixels[i + 1] + pixels[i + 2] < 720) {
+              inkSamples += 1;
+            }
+          }
+          if (inkSamples < 30) {
+            throw new Error("Blank PDF canvas");
+          }
+          const pdfBlob = await pdfWorker.toPdf().outputPdf("blob");
+          if (pdfBlob.size < 5000) {
+            throw new Error("PDF file too small");
+          }
           if (currentPdfUrl) URL.revokeObjectURL(currentPdfUrl);
           currentPdfUrl = URL.createObjectURL(pdfBlob);
           pdfDownloadLink.href = currentPdfUrl;

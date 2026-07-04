@@ -352,36 +352,33 @@
 
     #printSheet { display: none; }
 
-    #printSheet.pdf-export {
-      position: absolute;
-      z-index: 9999;
-      left: 0;
-      top: 0;
+    #printSheet.pdf-preview {
+      position: relative;
       display: block;
       width: 760px;
-      max-width: none;
+      max-width: 100%;
+      margin: 0 auto;
       padding: 42px;
       color: #17241f;
       background: white;
       font-size: 15px;
       line-height: 1.65;
-      pointer-events: none;
     }
 
-    #printSheet.pdf-export h1 {
+    #printSheet.pdf-preview h1 {
       margin: 0 0 12px;
       color: var(--green-dark);
       font-size: 30px;
     }
 
-    #printSheet.pdf-export h2 {
+    #printSheet.pdf-preview h2 {
       margin: 25px 0 8px;
       color: var(--green-dark);
       font-size: 20px;
       break-after: avoid;
     }
 
-    #printSheet.pdf-export .print-box {
+    #printSheet.pdf-preview .print-box {
       margin: 8px 0;
       padding: 12px 15px;
       border: 1px solid #aebbb5;
@@ -399,55 +396,46 @@
 
     #pdfStatus.is-error { color: #a33b27; }
 
-    .pdf-debug {
-      flex-basis: 100%;
-      padding: 12px 14px;
-      border: 1px solid #d9a99f;
-      border-radius: 12px;
-      background: #fff7f5;
-      color: #713126;
-      font-size: 12px;
+    .print-preview {
+      width: min(840px, calc(100% - 20px));
+      margin: 24px auto 60px;
+      padding: 20px;
+      border-radius: 18px;
+      background: #e6f2ec;
+      box-shadow: var(--shadow);
     }
 
-    .pdf-debug pre {
-      margin: 8px 0 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
+    .print-preview[hidden] { display: none; }
 
-    .pdf-ready {
-      flex-basis: 100%;
+    .preview-actions {
+      width: min(760px, 100%);
+      margin: 0 auto 16px;
       padding: 16px;
-      border: 2px solid #b5d4c4;
-      border-radius: 14px;
+      border-radius: 13px;
+      background: white;
+    }
+
+    .preview-actions p { margin: 6px 0 12px; }
+    .preview-actions .btn { margin: 4px 6px 4px 0; }
+
+    .preview-result {
+      margin: 12px 0;
+      padding: 13px;
+      border-radius: 11px;
       background: var(--green-soft);
     }
 
-    .pdf-ready[hidden] { display: none; }
-
-    .pdf-ready strong {
-      display: block;
-      margin-bottom: 9px;
-      color: var(--green-dark);
+    .preview-result.is-error {
+      color: #713126;
+      background: #fff0ec;
     }
 
-    .pdf-download-link {
+    .btn-link {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 48px;
-      padding: 10px 17px;
-      border-radius: 11px;
       color: white;
-      background: var(--green);
-      font-weight: 900;
       text-decoration: none;
-    }
-
-    .pdf-ready p {
-      margin: 9px 0 0;
-      color: var(--muted);
-      font-size: 13px;
     }
 
     @media (max-width: 640px) {
@@ -465,6 +453,15 @@
       @page { size: A4; margin: 14mm; }
       body { background: white; color: #111; font-size: 10.5pt; }
       .shell { display: none; }
+      #printPreview {
+        display: block !important;
+        width: auto;
+        margin: 0;
+        padding: 0;
+        background: white;
+        box-shadow: none;
+      }
+      .preview-actions { display: none !important; }
       #printSheet { display: block; }
       #printSheet h1 { color: #174d3b; font-size: 22pt; }
       #printSheet h2 { margin: 22px 0 6px; color: #174d3b; font-size: 14pt; }
@@ -479,7 +476,7 @@
   </style>
 </head>
 <body>
-  <!-- pdf-save-fix-v4 -->
+  <!-- pdf-preview-fallback-v11 -->
   <main class="shell">
     <header class="hero">
       <p class="eyebrow">わが家の防災ワーク</p>
@@ -627,19 +624,9 @@
           </div>
 
           <div class="final-actions">
-            <button class="btn btn-orange" type="button" id="printButton">PDFを作成</button>
+            <button class="btn btn-orange" type="button" id="printButton">PDFを作成して保存</button>
             <button class="btn btn-quiet" type="button" id="refreshResult">まとめを更新</button>
-            <button class="btn btn-quiet" type="button" id="printFallback" hidden>印刷画面からPDF保存</button>
             <p id="pdfStatus" aria-live="polite"></p>
-            <details class="pdf-debug" id="pdfDebug" hidden>
-              <summary>PDFエラーの詳細</summary>
-              <pre id="pdfDebugText"></pre>
-            </details>
-            <div class="pdf-ready" id="pdfReady" hidden>
-              <strong>PDFを作成できました</strong>
-              <a class="pdf-download-link" id="pdfDownloadLink" href="#" download="家族で使える備蓄ワーク.pdf">PDFファイルを保存する</a>
-              <p>保存画面が出ない場合は、上の緑色のボタンを長押しして「ダウンロード」または「リンクを開く」を選んでください。</p>
-            </div>
           </div>
           <p class="saved" id="savedMessage">入力すると自動保存されます。</p>
           <button class="reset-link" type="button" id="resetButton">すべての回答を消す</button>
@@ -653,7 +640,29 @@
     </section>
   </main>
 
-  <section id="printSheet" aria-hidden="true"></section>
+  <section class="print-preview" id="printPreview" hidden>
+    <div class="preview-actions">
+      <strong>PDFに保存する内容（プレビュー）</strong>
+      <p id="previewGuide">回答内容を描画して、自動PDFを作成しています。</p>
+      <div class="preview-result" id="autoPdfReady" hidden>
+        <strong>回答入りPDFを作成できました</strong>
+        <p id="pdfResultInfo"></p>
+        <a class="btn btn-primary btn-link" id="pdfDownloadLink" href="#" download="家族で使える備蓄ワーク.pdf">PDFファイルを保存</a>
+      </div>
+      <div class="preview-result is-error" id="printFallbackGroup" hidden>
+        <strong>印刷画面からPDF保存へ切り替えます</strong>
+        <p>下のボタンを押すと印刷画面が開きます。保存先でPDFとして保存してください。</p>
+        <button class="btn btn-orange" type="button" id="openPrintButton">印刷画面を開く</button>
+        <details>
+          <summary>自動PDF作成のエラー詳細</summary>
+          <pre id="pdfErrorDetail"></pre>
+        </details>
+      </div>
+      <button class="btn btn-quiet" type="button" id="closePrintPreview">プレビューを閉じる</button>
+      <p class="saved" id="previewSize"></p>
+    </div>
+    <section class="pdf-preview" id="printSheet"></section>
+  </section>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
@@ -808,6 +817,53 @@
         `;
       }
 
+      async function waitForRenderedPreview() {
+        const printSheet = document.getElementById("printSheet");
+        if (document.fonts?.ready) await document.fonts.ready;
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        const rect = printSheet.getBoundingClientRect();
+        const textLength = printSheet.innerText.trim().length;
+        if (rect.width < 100 || rect.height < 100 || textLength < 50) {
+          throw new Error(
+            `PDF描画対象が空です（${Math.round(rect.width)}×${Math.round(rect.height)}px、${textLength}文字）`
+          );
+        }
+        return { rect, textLength };
+      }
+
+      function inspectCanvas(canvas) {
+        if (!canvas || canvas.width < 100 || canvas.height < 100) {
+          throw new Error(
+            `Canvasのサイズが不正です（${canvas?.width || 0}×${canvas?.height || 0}px）`
+          );
+        }
+        const probe = document.createElement("canvas");
+        probe.width = 96;
+        probe.height = Math.max(
+          96,
+          Math.min(320, Math.round(canvas.height * (probe.width / canvas.width)))
+        );
+        const context = probe.getContext("2d", { willReadFrequently: true });
+        context.drawImage(canvas, 0, 0, probe.width, probe.height);
+        const pixels = context.getImageData(0, 0, probe.width, probe.height).data;
+        let visiblePixels = 0;
+        for (let i = 0; i < pixels.length; i += 4) {
+          if (
+            pixels[i + 3] > 0 &&
+            (pixels[i] < 242 || pixels[i + 1] < 242 || pixels[i + 2] < 242)
+          ) {
+            visiblePixels += 1;
+          }
+        }
+        if (visiblePixels < 20) {
+          throw new Error(
+            `Canvasが白紙です（${canvas.width}×${canvas.height}px、描画画素 ${visiblePixels}）`
+          );
+        }
+        return visiblePixels;
+      }
+
       nextButton.addEventListener("click", () => showStep(current + 1));
       prevButton.addEventListener("click", () => showStep(current - 1));
       form.addEventListener("input", scheduleSave);
@@ -817,137 +873,134 @@
         const button = document.getElementById("printButton");
         const status = document.getElementById("pdfStatus");
         const printSheet = document.getElementById("printSheet");
-        const pdfReady = document.getElementById("pdfReady");
+        const printPreview = document.getElementById("printPreview");
+        const previewSize = document.getElementById("previewSize");
+        const previewGuide = document.getElementById("previewGuide");
+        const autoPdfReady = document.getElementById("autoPdfReady");
+        const pdfResultInfo = document.getElementById("pdfResultInfo");
         const pdfDownloadLink = document.getElementById("pdfDownloadLink");
-        const printFallback = document.getElementById("printFallback");
-        const pdfDebug = document.getElementById("pdfDebug");
-        const pdfDebugText = document.getElementById("pdfDebugText");
-        let stage = "開始";
-        let sheetRect;
-        const setStage = (nextStage) => {
-          stage = nextStage;
-          status.textContent = `PDFを作成しています… ${nextStage}`;
-          console.info(`[PDF] ${nextStage}`);
-        };
+        const printFallbackGroup = document.getElementById("printFallbackGroup");
+        const pdfErrorDetail = document.getElementById("pdfErrorDetail");
         buildResult();
         button.disabled = true;
-        pdfReady.hidden = true;
-        printFallback.hidden = true;
-        pdfDebug.hidden = true;
-        pdfDebugText.textContent = "";
         status.classList.remove("is-error");
-        setStage("準備");
-        printSheet.classList.add("pdf-export");
+        status.textContent = "回答入りPDFを作成しています…";
+        previewGuide.textContent = "回答内容を描画して、自動PDFを作成しています。";
+        autoPdfReady.hidden = true;
+        printFallbackGroup.hidden = true;
+        pdfErrorDetail.textContent = "";
+        printPreview.hidden = false;
         try {
-          setStage("PDFライブラリの確認");
+          const { rect, textLength } = await waitForRenderedPreview();
+          previewSize.textContent =
+            `描画確認済み：${Math.round(rect.width)}×${Math.round(rect.height)}px、${textLength}文字`;
+          printPreview.scrollIntoView({ behavior: "smooth", block: "start" });
+
           if (typeof window.html2pdf !== "function") {
-            throw new Error("html2pdf.jsを読み込めませんでした");
+            throw new Error("自動PDFライブラリを読み込めませんでした");
           }
-          if (document.fonts?.ready) await document.fonts.ready;
-          await new Promise(resolve =>
-            requestAnimationFrame(() => requestAnimationFrame(resolve))
+
+          // 端末ごとのCanvas上限を超えないように、表示サイズから倍率を調整する。
+          const safePixelBudget = 8000000;
+          const scale = Math.max(
+            1,
+            Math.min(2, Math.sqrt(safePixelBudget / (rect.width * rect.height)))
           );
-          setStage("回答内容の確認");
-          sheetRect = printSheet.getBoundingClientRect();
-          if (
-            sheetRect.width < 100 ||
-            sheetRect.height < 100 ||
-            printSheet.innerText.trim().length < 50
-          ) {
+          const options = {
+            margin: 10,
+            filename: "家族で使える備蓄ワーク.pdf",
+            image: { type: "jpeg", quality: 0.92 },
+            html2canvas: {
+              scale: Number(scale.toFixed(2)),
+              useCORS: true,
+              backgroundColor: "#ffffff",
+              logging: true
+            },
+            jsPDF: {
+              unit: "mm",
+              format: "a4",
+              orientation: "portrait"
+            },
+            pagebreak: { mode: ["css", "legacy"] }
+          };
+
+          previewGuide.textContent = "プレビューの描画内容を確認しています。";
+          const worker = window.html2pdf().set(options).from(printSheet).toCanvas();
+          const canvas = await worker.get("canvas").thenExternal(value => value);
+          const visiblePixels = inspectCanvas(canvas);
+
+          const pdfBlob = await worker
+            .toPdf()
+            .outputPdf("blob")
+            .thenExternal(value => value);
+          if (!(pdfBlob instanceof Blob) || pdfBlob.size < 1000) {
             throw new Error(
-              `PDF用画面のサイズが不正です（${Math.round(sheetRect.width)}×${Math.round(sheetRect.height)}px）`
+              `PDFデータが不正です（${pdfBlob?.size || 0} bytes）`
             );
           }
 
-          // Android端末でCanvasが大きくなりすぎないよう、総画素数から倍率を決める。
-          const safePixelBudget = 8000000;
-          const adaptiveScale = Math.max(
-            1,
-            Math.min(2, Math.sqrt(safePixelBudget / (sheetRect.width * sheetRect.height)))
-          );
-          const scales = [...new Set([Number(adaptiveScale.toFixed(2)), 1])];
-          const attemptErrors = [];
-          let pdfBlob;
-
-          for (const scale of scales) {
-            try {
-              setStage(`PDF変換（倍率 ${scale}）`);
-              pdfBlob = await window.html2pdf().set({
-                margin: 10,
-                filename: "家族で使える備蓄ワーク.pdf",
-                image: { type: "jpeg", quality: 0.92 },
-                html2canvas: {
-                  scale,
-                  useCORS: true,
-                  backgroundColor: "#ffffff",
-                  logging: true
-                },
-                jsPDF: {
-                  unit: "mm",
-                  format: "a4",
-                  orientation: "portrait"
-                },
-                pagebreak: { mode: ["css", "legacy"] }
-              }).from(printSheet).outputPdf("blob");
-
-              if (!(pdfBlob instanceof Blob)) {
-                throw new TypeError(`PDFの戻り値がBlobではありません（${typeof pdfBlob}）`);
-              }
-              if (pdfBlob.size < 1000) {
-                throw new Error(`作成されたPDFが小さすぎます（${pdfBlob.size} bytes）`);
-              }
-              break;
-            } catch (attemptError) {
-              attemptErrors.push(
-                `倍率 ${scale}: ${attemptError?.name || "Error"}: ${attemptError?.message || attemptError}`
-              );
-              console.error(`[PDF] 倍率 ${scale} の変換に失敗`, attemptError);
-              pdfBlob = null;
-            }
-          }
-
-          if (!pdfBlob) {
-            throw new Error(attemptErrors.join(" / "));
-          }
-
-          setStage("保存ファイルの準備");
           if (currentPdfUrl) URL.revokeObjectURL(currentPdfUrl);
           currentPdfUrl = URL.createObjectURL(pdfBlob);
           pdfDownloadLink.href = currentPdfUrl;
-          pdfReady.hidden = false;
+          pdfResultInfo.textContent =
+            `${Math.ceil(pdfBlob.size / 1024)}KB、描画画素 ${visiblePixels}。プレビューと同じ回答内容です。`;
+          autoPdfReady.hidden = false;
+          previewGuide.textContent =
+            "自動PDFを作成しました。下のボタンから保存してください。";
           status.textContent =
-            `PDFを作成しました（${Math.ceil(pdfBlob.size / 1024)}KB）。下の緑色のボタンから保存してください。`;
+            "回答入りPDFを作成しました。プレビュー下の「PDFファイルを保存」を押してください。";
         } catch (error) {
-          const errorName = error?.name || "Error";
           const errorMessage = error?.message || String(error);
-          const debugLines = [
-            `段階: ${stage}`,
-            `エラー: ${errorName}: ${errorMessage}`,
-            `画面: ${window.innerWidth}×${window.innerHeight}`,
-            `PDF用画面: ${sheetRect ? `${Math.round(sheetRect.width)}×${Math.round(sheetRect.height)}` : "未取得"}`,
+          const detail = [
+            `${error?.name || "Error"}: ${errorMessage}`,
             `User-Agent: ${navigator.userAgent}`
-          ];
-          console.error("[PDF] PDF作成に失敗しました", {
-            stage,
-            error,
-            sheetRect,
-            userAgent: navigator.userAgent
-          });
+          ].join("\n");
+          console.error("[PDF] 自動PDF作成に失敗。印刷方式へ切り替えます", error);
           status.classList.add("is-error");
-          status.textContent = `PDF作成に失敗しました：${errorMessage}`;
-          pdfDebugText.textContent = debugLines.join("\n");
-          pdfDebug.hidden = false;
-          printFallback.hidden = false;
-          alert(`PDF作成に失敗しました。\n\n${debugLines.slice(0, 2).join("\n")}`);
+          status.textContent =
+            "自動PDF作成に失敗しました。印刷画面からPDFとして保存できます。";
+          previewGuide.textContent =
+            "自動PDF作成に失敗しました。印刷画面方式へ切り替えました。";
+          pdfErrorDetail.textContent = detail;
+          printFallbackGroup.hidden = false;
+          alert(
+            `自動PDF作成に失敗しました。\n` +
+            `下のボタンを押すと印刷画面が開きます。保存先でPDFとして保存してください。\n\n` +
+            `原因: ${errorMessage}`
+          );
         } finally {
-          printSheet.classList.remove("pdf-export");
           button.disabled = false;
         }
       });
-      document.getElementById("printFallback").addEventListener("click", () => {
+
+      document.getElementById("openPrintButton").addEventListener("click", async () => {
         buildResult();
-        console.info("[PDF] window.print() を実行します");
-        window.print();
+        const printSheet = document.getElementById("printSheet");
+        try {
+          if (document.fonts?.ready) await document.fonts.ready;
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const sheetRect = printSheet.getBoundingClientRect();
+          const textLength = printSheet.innerText.trim().length;
+          if (sheetRect.width < 100 || sheetRect.height < 100 || textLength < 50) {
+            throw new Error(
+              `印刷対象が空です（${Math.round(sheetRect.width)}×${Math.round(sheetRect.height)}px、${textLength}文字）`
+            );
+          }
+          console.info("[PDF] 描画済みDOMをwindow.print()へ渡します", {
+            width: sheetRect.width,
+            height: sheetRect.height,
+            textLength
+          });
+          window.print();
+        } catch (error) {
+          console.error("[PDF] 印刷画面を開けませんでした", error);
+          alert(`印刷画面を開けませんでした。\n${error?.message || error}`);
+        }
+      });
+
+      document.getElementById("closePrintPreview").addEventListener("click", () => {
+        document.getElementById("printPreview").hidden = true;
+        document.getElementById("pdfStatus").textContent = "";
       });
       document.getElementById("resetButton").addEventListener("click", () => {
         if (!confirm("すべての回答を消しますか？")) return;

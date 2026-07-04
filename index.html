@@ -812,7 +812,15 @@
           await new Promise(resolve =>
             requestAnimationFrame(() => requestAnimationFrame(resolve))
           );
-          const pdfWorker = window.html2pdf().set({
+          const sheetRect = printSheet.getBoundingClientRect();
+          if (
+            sheetRect.width < 100 ||
+            sheetRect.height < 100 ||
+            printSheet.innerText.trim().length < 50
+          ) {
+            throw new Error("PDF sheet is not visible");
+          }
+          const pdfBlob = await window.html2pdf().set({
             margin: 10,
             filename: "家族で使える備蓄ワーク.pdf",
             image: { type: "jpeg", quality: 0.98 },
@@ -827,20 +835,7 @@
               orientation: "portrait"
             },
             pagebreak: { mode: ["css", "legacy"] }
-          }).from(printSheet).toCanvas();
-          const canvas = await pdfWorker.get("canvas");
-          const context = canvas.getContext("2d", { willReadFrequently: true });
-          const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-          let inkSamples = 0;
-          for (let i = 0; i < pixels.length; i += 400) {
-            if (pixels[i + 3] > 0 && pixels[i] + pixels[i + 1] + pixels[i + 2] < 720) {
-              inkSamples += 1;
-            }
-          }
-          if (inkSamples < 30) {
-            throw new Error("Blank PDF canvas");
-          }
-          const pdfBlob = await pdfWorker.toPdf().outputPdf("blob");
+          }).from(printSheet).outputPdf("blob");
           if (pdfBlob.size < 5000) {
             throw new Error("PDF file too small");
           }

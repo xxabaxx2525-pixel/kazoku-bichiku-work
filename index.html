@@ -11,24 +11,63 @@
      * このHTML固有の最小調整です。
      * 色・文字・余白・ボタン・カードの基本は共通CSSを使用します。
      */
+    .cover-step {
+      padding-top: var(--rk-space-2);
+    }
+
     .app-meta {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 0.45rem;
-      margin: 0 0 var(--rk-space-3);
+      gap: 0.25rem 0.75rem;
+      margin: 0 auto var(--rk-space-3);
       padding: 0;
+      color: var(--rk-muted);
+      font-size: var(--rk-text-small);
+      font-weight: 800;
+      letter-spacing: 0.04em;
       list-style: none;
+      text-align: center;
     }
 
     .app-meta li {
-      padding: 0.18rem 0.8rem;
-      color: var(--rk-mint-800);
-      font-size: var(--rk-text-small);
-      font-weight: 900;
-      background: var(--rk-lemon-100);
-      border: 2px solid var(--rk-lemon-300);
-      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .app-meta li + li::before {
+      content: "／";
+      color: var(--rk-line);
+      font-weight: 700;
+    }
+
+    .cover-title {
+      margin-top: var(--rk-space-1);
+    }
+
+    .cover-lead {
+      margin-bottom: var(--rk-space-4);
+    }
+
+    .cover-hero {
+      grid-template-columns: minmax(0, 1fr) minmax(112px, 34%);
+      align-items: center;
+      margin-top: var(--rk-space-3);
+    }
+
+    .cover-hero .rk-speech {
+      width: 100%;
+      max-width: 100%;
+      padding: clamp(0.9rem, 3.5vw, 1.3rem);
+      border-radius: var(--rk-radius-md);
+      line-height: 1.85;
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
+
+    .cover-hero .rk-mascot {
+      width: min(100%, 180px);
     }
 
     .step { display: none; }
@@ -138,6 +177,41 @@
     }
 
     @media (max-width: 560px) {
+      .cover-step {
+        padding-top: var(--rk-space-1);
+      }
+
+      .app-meta {
+        display: grid;
+        gap: 0.15rem;
+        margin-bottom: var(--rk-space-2);
+        line-height: 1.55;
+      }
+
+      .app-meta li {
+        display: block;
+      }
+
+      .app-meta li + li::before {
+        content: "";
+      }
+
+      .cover-hero {
+        grid-template-columns: minmax(0, 1fr) minmax(96px, 31%);
+        gap: 0.7rem;
+        padding: 0.85rem;
+      }
+
+      .cover-hero .rk-speech {
+        padding: 0.85rem;
+        font-size: 0.92rem;
+        line-height: 1.8;
+      }
+
+      .cover-hero .rk-mascot {
+        width: min(100%, 128px);
+      }
+
       .pair {
         grid-template-columns: 2.2rem 1fr;
       }
@@ -168,17 +242,17 @@
 
       <main class="rk-main">
         <form id="workForm">
-          <section class="step active" data-step="0">
+          <section class="step active cover-step" data-step="0">
             <ul class="app-meta" aria-label="このワークの動画連動情報">
               <li>ステージ2-5</li>
               <li>止まりにくい備蓄運用</li>
               <li>ワーク①</li>
             </ul>
             <p class="rk-kicker">動画連動ワーク</p>
-            <h2 class="rk-title">家族で使える<br>備蓄ワーク</h2>
-            <p class="rk-lead">動画を見た後に、備蓄を「家族が迷わず使える形」に整えるための記録・確認・保存用ワークです。</p>
+            <h2 class="rk-title cover-title">家族で使える<br>備蓄ワーク</h2>
+            <p class="rk-lead cover-lead">動画を見た後に、備蓄を「家族が迷わず使える形」に整えるための記録・確認・保存用ワークです。</p>
 
-            <div class="rk-hero">
+            <div class="rk-hero cover-hero">
               <div class="rk-speech">ケロティと一緒に、よく食べるものから備蓄の仕組みを整えていこう♪</div>
               <img class="rk-mascot" src="assets/keroty.png" alt="小さな黄色い王冠をつけたカエルのケロティ">
             </div>

@@ -3,709 +3,441 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>家族で使える備蓄ワーク</title>
+  <meta name="theme-color" content="#def3e8">
+  <title>ステージ2-5｜ワーク①家族で使える備蓄ワーク</title>
+  <link rel="stylesheet" href="styles/rakukaji-design-system.css">
   <style>
-    :root {
-      --ink: #26342f;
-      --muted: #68756f;
-      --paper: #fffdf8;
-      --cream: #f5f0e4;
-      --green: #28765b;
-      --green-dark: #165340;
-      --green-soft: #e6f2ec;
-      --orange: #e88a3d;
-      --orange-soft: #fff0df;
-      --line: #d9ded8;
-      --shadow: 0 18px 50px rgba(39, 67, 56, .12);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 8% 5%, rgba(232,138,61,.12), transparent 24rem),
-        radial-gradient(circle at 95% 20%, rgba(40,118,91,.12), transparent 25rem),
-        var(--cream);
-      font-family: "Yu Gothic", "Hiragino Sans", system-ui, sans-serif;
-      line-height: 1.7;
-    }
-
-    button, input, textarea, select { font: inherit; }
-    button, label { -webkit-tap-highlight-color: transparent; }
-
-    .shell {
-      width: min(920px, calc(100% - 28px));
-      margin: 28px auto 60px;
-    }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      padding: 34px clamp(24px, 5vw, 52px);
-      border-radius: 28px 28px 0 0;
-      color: white;
-      background: var(--green-dark);
-    }
-
-    .hero::after {
-      content: "＋";
-      position: absolute;
-      right: 5%;
-      top: -36px;
-      font-size: 180px;
-      font-weight: 900;
-      line-height: 1;
-      color: rgba(255,255,255,.07);
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 0 8px;
-      font-weight: 800;
-      letter-spacing: .08em;
-      color: #ffd19e;
-    }
-
-    h1 {
-      margin: 0;
-      max-width: 650px;
-      font-size: clamp(28px, 5vw, 47px);
-      line-height: 1.22;
-      letter-spacing: .02em;
-    }
-
-    .hero p {
-      max-width: 650px;
-      margin: 15px 0 0;
-      color: rgba(255,255,255,.86);
-    }
-
-    .privacy {
-      display: inline-block;
-      margin-top: 18px;
-      padding: 5px 12px;
-      border: 1px solid rgba(255,255,255,.24);
-      border-radius: 999px;
-      font-size: 13px;
-    }
-
-    .workspace {
-      padding: clamp(20px, 5vw, 48px);
-      border-radius: 0 0 28px 28px;
-      background: var(--paper);
-      box-shadow: var(--shadow);
-    }
-
-    .progress-label {
+    /*
+     * このHTML固有の最小調整です。
+     * 色・文字・余白・ボタン・カードの基本は共通CSSを使用します。
+     */
+    .app-meta {
       display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.45rem;
+      margin: 0 0 var(--rk-space-3);
+      padding: 0;
+      list-style: none;
     }
 
-    .progress-track {
-      height: 9px;
-      margin-bottom: 28px;
-      overflow: hidden;
+    .app-meta li {
+      padding: 0.18rem 0.8rem;
+      color: var(--rk-mint-800);
+      font-size: var(--rk-text-small);
+      font-weight: 900;
+      background: var(--rk-lemon-100);
+      border: 2px solid var(--rk-lemon-300);
       border-radius: 999px;
-      background: #e8ebe6;
     }
 
-    .progress-bar {
-      width: 20%;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--orange), #f1b35b);
-      transition: width .3s ease;
-    }
-
-    .step { display: none; animation: appear .25s ease; }
+    .step { display: none; }
     .step.active { display: block; }
-    @keyframes appear {
-      from { opacity: 0; transform: translateY(7px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    .form-row {
+      display: grid;
+      gap: 0.35rem;
+      margin: var(--rk-space-3) 0;
     }
 
-    .step-kicker {
-      margin: 0 0 5px;
-      color: var(--green);
+    .form-row label,
+    .field-label {
       font-weight: 900;
     }
 
-    h2 {
-      margin: 0 0 10px;
-      font-size: clamp(24px, 4vw, 34px);
-      line-height: 1.35;
-    }
-
-    h3 {
-      margin: 30px 0 8px;
-      font-size: 19px;
-    }
-
-    .lead { margin: 0 0 24px; color: var(--muted); }
-
-    .number-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 18px 0 28px;
-      padding: 17px 20px;
-      border-radius: 16px;
-      background: var(--green-soft);
-      font-weight: 800;
-    }
-
-    input[type="number"] {
-      width: 78px;
-      padding: 8px 10px;
-      border: 2px solid transparent;
-      border-radius: 10px;
-      text-align: center;
-      background: white;
-      outline: none;
-    }
-
-    input[type="number"]:focus, input[type="text"]:focus, textarea:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(40,118,91,.12);
-    }
-
-    .choices {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin: 14px 0 20px;
-    }
-
-    .choice {
-      position: relative;
-      display: flex;
-      align-items: center;
-      min-height: 56px;
-      padding: 12px 14px;
-      border: 2px solid var(--line);
-      border-radius: 14px;
-      background: white;
-      cursor: pointer;
-      transition: .18s ease;
-    }
-
-    .choice:hover { border-color: #9eb7aa; transform: translateY(-1px); }
-    .choice:has(input:checked) {
-      border-color: var(--green);
-      background: var(--green-soft);
-    }
-
-    .choice input {
-      width: 19px;
-      height: 19px;
-      margin: 0 10px 0 0;
-      accent-color: var(--green);
-      flex: 0 0 auto;
-    }
-
-    .other-input, textarea, .pair input {
+    .form-row input[type="text"],
+    .form-row input[type="number"],
+    .form-row textarea,
+    .pair input {
       width: 100%;
-      border: 2px solid var(--line);
-      border-radius: 13px;
-      background: white;
+      min-height: var(--rk-tap);
+      padding: 0.7rem 1rem;
+      color: var(--rk-ink);
+      background: var(--rk-white);
+      border: 2px solid var(--rk-warm-line);
+      border-radius: var(--rk-radius-sm);
       outline: none;
     }
 
-    .other-input { padding: 12px 14px; }
-    textarea {
-      min-height: 104px;
-      padding: 13px 15px;
+    .form-row textarea {
+      min-height: 7rem;
       resize: vertical;
     }
 
-    .note {
-      margin: 18px 0;
-      padding: 17px 18px;
-      border-left: 5px solid var(--orange);
-      border-radius: 0 14px 14px 0;
-      background: var(--orange-soft);
+    .number-inline {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      max-width: 18rem;
     }
 
-    .note strong { display: block; }
+    .number-inline input { text-align: center; }
 
     .pair-list {
       display: grid;
-      gap: 14px;
-      margin-top: 20px;
+      gap: 0.75rem;
+      margin-top: var(--rk-space-3);
     }
 
     .pair {
       display: grid;
-      grid-template-columns: 38px 1fr 32px 1fr;
+      grid-template-columns: 2.2rem 1fr 2rem 1fr;
+      gap: 0.55rem;
       align-items: center;
-      gap: 10px;
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: white;
+      padding: 0.75rem;
+      background: var(--rk-white);
+      border: 2px solid var(--rk-warm-line);
+      border-radius: var(--rk-radius-sm);
     }
 
     .pair-number {
       display: grid;
+      width: 2rem;
+      height: 2rem;
       place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      color: white;
-      background: var(--green);
+      color: var(--rk-white);
       font-weight: 900;
+      background: var(--rk-mint-700);
+      border-radius: 50%;
     }
 
     .plus {
-      color: var(--orange);
-      font-size: 25px;
+      color: var(--rk-mint-800);
+      font-size: 1.45rem;
       font-weight: 900;
       text-align: center;
     }
 
-    .pair input { min-width: 0; padding: 11px 12px; }
-
-    .example {
-      margin: 16px 0;
-      padding: 15px 18px;
-      border-radius: 14px;
-      background: #f2f3ef;
-      color: var(--muted);
-      font-size: 14px;
+    .result-summary {
+      display: grid;
+      gap: 0.75rem;
     }
 
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 34px;
-      padding-top: 22px;
-      border-top: 1px solid var(--line);
+    .result-summary p,
+    .result-summary ul {
+      margin-top: 0;
+      margin-bottom: 0;
     }
 
-    .btn {
-      min-height: 50px;
-      padding: 11px 20px;
-      border: 0;
-      border-radius: 13px;
-      cursor: pointer;
-      font-weight: 900;
-      transition: .18s ease;
+    .pdf-note {
+      margin-top: var(--rk-space-3);
+      padding: var(--rk-space-3);
+      color: var(--rk-muted);
+      font-size: var(--rk-text-small);
+      background: var(--rk-mint-50);
+      border: 2px dashed var(--rk-line);
+      border-radius: var(--rk-radius-sm);
     }
 
-    .btn:hover { transform: translateY(-1px); }
-    .btn-primary { color: white; background: var(--green); }
-    .btn-primary:hover { background: var(--green-dark); }
-    .btn-quiet { color: var(--ink); background: #eceeea; }
-    .btn-orange { color: #542c08; background: #ffc26e; }
-    .btn:disabled { visibility: hidden; }
-
-    .result-card {
-      margin: 20px 0;
-      padding: 24px;
-      border: 2px solid #b5d4c4;
-      border-radius: 20px;
-      background: linear-gradient(145deg, #eff8f3, white);
+    .single-action {
+      grid-template-columns: 1fr;
     }
 
-    .result-card h3 { margin: 0 0 12px; color: var(--green-dark); }
-    .result-list { margin: 10px 0 0; padding-left: 1.2em; }
-    .result-list li { margin: 7px 0; }
-
-    .action-result {
-      margin-top: 18px;
-      padding: 16px 18px;
-      border-radius: 14px;
-      background: var(--orange-soft);
-      font-weight: 800;
+    .rk-actions[hidden] {
+      display: none !important;
     }
 
-    .final-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .saved {
-      margin-top: 13px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .reset-link {
-      border: 0;
-      color: var(--muted);
-      background: transparent;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    #printSheet {
-      display: block;
-      visibility: visible;
-    }
-
-    #printSheet.pdf-preview {
-      position: relative;
-      display: block;
-      width: 760px;
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 42px;
-      color: #17241f;
-      background: white;
-      font-size: 15px;
-      line-height: 1.65;
-    }
-
-    #printSheet.pdf-preview h1 {
-      margin: 0 0 12px;
-      color: var(--green-dark);
-      font-size: 30px;
-    }
-
-    #printSheet.pdf-preview h2 {
-      margin: 25px 0 8px;
-      color: var(--green-dark);
-      font-size: 20px;
-      break-after: avoid;
-    }
-
-    #printSheet.pdf-preview .print-box {
-      margin: 8px 0;
-      padding: 12px 15px;
-      border: 1px solid #aebbb5;
-      border-radius: 8px;
-      break-inside: avoid;
-    }
-
-    #pdfStatus {
-      flex-basis: 100%;
-      min-height: 1.7em;
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    #pdfStatus.is-error { color: #a33b27; }
-
-    .print-preview {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      visibility: visible;
-      display: block;
-      width: min(840px, calc(100% - 20px));
-      margin: 24px auto 60px;
-      padding: 20px;
-      border-radius: 18px;
-      background: #e6f2ec;
-      box-shadow: var(--shadow);
-    }
-
-    .print-preview.is-visible {
-      position: relative;
-      left: auto;
-      top: auto;
-    }
-
-    .preview-actions {
-      width: min(760px, 100%);
-      margin: 0 auto 16px;
-      padding: 16px;
-      border-radius: 13px;
-      background: white;
-    }
-
-    .preview-actions p { margin: 6px 0 12px; }
-    .preview-actions .btn { margin: 4px 6px 4px 0; }
-
-    .preview-result {
-      margin: 12px 0;
-      padding: 13px;
-      border-radius: 11px;
-      background: var(--green-soft);
-    }
-
-    .preview-result.is-error {
-      color: #713126;
-      background: #fff0ec;
-    }
-
-    .btn-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      text-decoration: none;
-    }
-
-    @media (max-width: 640px) {
-      .shell { width: min(100% - 16px, 920px); margin-top: 8px; }
-      .hero { border-radius: 20px 20px 0 0; padding: 26px 22px; }
-      .workspace { border-radius: 0 0 20px 20px; padding: 24px 18px; }
-      .choices { grid-template-columns: 1fr; }
-      .pair { grid-template-columns: 34px 1fr; }
-      .pair .plus { grid-column: 2; line-height: 1; text-align: left; }
-      .pair input:last-child { grid-column: 2; }
-      .nav .btn { flex: 1; padding-inline: 12px; }
-    }
-
-    @media print {
-      @page { size: A4; margin: 14mm; }
-      body { background: white; color: #111; font-size: 10.5pt; }
-      .shell { display: none; }
-      #printPreview {
-        display: block !important;
-        position: static !important;
-        left: auto !important;
-        top: auto !important;
-        visibility: visible !important;
-        width: auto;
-        margin: 0;
-        padding: 0;
-        background: white;
-        box-shadow: none;
+    @media (max-width: 560px) {
+      .pair {
+        grid-template-columns: 2.2rem 1fr;
       }
-      .preview-actions { display: none !important; }
-      #printSheet { display: block; }
-      #printSheet h1 { color: #174d3b; font-size: 22pt; }
-      #printSheet h2 { margin: 22px 0 6px; color: #174d3b; font-size: 14pt; }
-      #printSheet ul { margin-top: 5px; }
-      #printSheet .print-box {
-        margin: 8px 0;
-        padding: 10px 13px;
-        border: 1px solid #aaa;
-        border-radius: 8px;
+
+      .pair .plus,
+      .pair input:last-child {
+        grid-column: 2;
+      }
+
+      .pair .plus {
+        text-align: left;
+        line-height: 1;
       }
     }
   </style>
 </head>
 <body>
-  <!-- pdf-preview-fallback-v12 -->
-  <main class="shell">
-    <header class="hero">
-      <p class="eyebrow">わが家の防災ワーク</p>
-      <h1>家族で使える<br>備蓄をつくろう</h1>
-      <p>たくさん買うだけではなく、疲れている時でも、家族が迷わず食べられる形を考えるワークです。</p>
-      <span class="privacy">入力内容はこの端末の中だけに保存されます</span>
-    </header>
+  <div id="app" class="rk-app">
+    <div class="rk-shell">
+      <header class="rk-header">
+        <button class="rk-back" id="headerBack" type="button" aria-label="前の画面へ戻る" hidden>←</button>
+        <div>
+          <p class="rk-header__brand">✿ らりるれ楽家事研究室</p>
+          <h1 class="rk-header__title">ステージ2-5｜ワーク①家族で使える備蓄ワーク</h1>
+        </div>
+        <img class="rk-header__mascot" src="assets/keroty.png" alt="小さな黄色い王冠をつけたカエルのケロティ">
+      </header>
 
-    <section class="workspace">
-      <div class="progress-label">
-        <span id="stepLabel">STEP 1 / 5</span>
-        <span id="stepName">いつもの食品</span>
-      </div>
-      <div class="progress-track" aria-hidden="true">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
+      <main class="rk-main">
+        <form id="workForm">
+          <section class="step active" data-step="0">
+            <ul class="app-meta" aria-label="このワークの動画連動情報">
+              <li>ステージ2-5</li>
+              <li>止まりにくい備蓄運用</li>
+              <li>ワーク①</li>
+            </ul>
+            <p class="rk-kicker">動画連動ワーク</p>
+            <h2 class="rk-title">家族で使える<br>備蓄ワーク</h2>
+            <p class="rk-lead">動画を見た後に、備蓄を「家族が迷わず使える形」に整えるための記録・確認・保存用ワークです。</p>
 
-      <form id="workForm">
-        <section class="step active" data-step="0">
-          <p class="step-kicker">STEP 1</p>
-          <h2>普段よく食べるもの</h2>
-          <p class="lead">「備蓄専用品」でなくても大丈夫。普段から食べて、なくなると買い足す、日持ちのするものを選びましょう。</p>
-
-          <div class="number-row">
-            <label for="familyCount">一緒に備える家族は</label>
-            <input id="familyCount" name="familyCount" type="number" min="1" max="20" value="2">
-            <span>人</span>
-          </div>
-
-          <div class="choices" id="foodChoices">
-            <label class="choice"><input type="checkbox" name="foods" value="カップ麺">カップ麺</label>
-            <label class="choice"><input type="checkbox" name="foods" value="レトルトカレー">レトルトカレー</label>
-            <label class="choice"><input type="checkbox" name="foods" value="パスタ">パスタ・麺類</label>
-            <label class="choice"><input type="checkbox" name="foods" value="缶詰">缶詰</label>
-            <label class="choice"><input type="checkbox" name="foods" value="お菓子">お菓子</label>
-            <label class="choice"><input type="checkbox" name="foods" value="スープ">スープ</label>
-            <label class="choice"><input type="checkbox" name="foods" value="シリアル">シリアル</label>
-            <label class="choice"><input type="checkbox" name="foods" value="ごはんパック">ごはんパック</label>
-          </div>
-          <label for="otherFood"><strong>その他</strong></label>
-          <input class="other-input" id="otherFood" name="otherFood" type="text" placeholder="例：乾パン、フルーツ缶">
-        </section>
-
-        <section class="step" data-step="1">
-          <p class="step-kicker">STEP 2</p>
-          <h2>3日間を想像してみる</h2>
-          <p class="lead">選んだ食品だけで、家族が3日続けて過ごせそうでしょうか。</p>
-
-          <div class="choices">
-            <label class="choice"><input type="radio" name="threeDays" value="十分そう">十分そう</label>
-            <label class="choice"><input type="radio" name="threeDays" value="少し足りない">少し足りない</label>
-            <label class="choice"><input type="radio" name="threeDays" value="分からない">まだ分からない</label>
-          </div>
-
-          <h3>食べ物以外も確認</h3>
-          <div class="choices">
-            <label class="choice"><input type="checkbox" name="essentials" value="飲み水">飲み水がある</label>
-            <label class="choice"><input type="checkbox" name="essentials" value="加熱手段">電気・ガスが止まった時の加熱手段がある</label>
-            <label class="choice"><input type="checkbox" name="essentials" value="道具">缶切りなど必要な道具がある</label>
-            <label class="choice"><input type="checkbox" name="essentials" value="加熱不要">加熱せず食べられるものがある</label>
-          </div>
-
-          <h3>不足しそうなもの</h3>
-          <textarea name="shortage" placeholder="例：野菜が少ない、水が足りないかもしれない"></textarea>
-
-          <h3>家族に合わせた配慮</h3>
-          <p class="lead">アレルギー、乳幼児、高齢者、持病・服薬など、食事で気をつけたいことがあれば書きましょう。</p>
-          <textarea name="care" placeholder="特になければ空欄で大丈夫です"></textarea>
-        </section>
-
-        <section class="step" data-step="2">
-          <p class="step-kicker">STEP 3</p>
-          <h2>わが家の「ニコイチ」</h2>
-          <p class="lead">よく食べるものに、一緒に使いたいものを組み合わせてみましょう。まずは1組だけでも十分です。</p>
-          <div class="example">例：カップ麺 ＋ 乾燥野菜 ／ パスタ ＋ サバ缶 ／ レトルトカレー ＋ 蒸し大豆</div>
-
-          <div class="pair-list">
-            <div class="pair">
-              <span class="pair-number">1</span>
-              <input name="pair1a" type="text" placeholder="カップ麺">
-              <span class="plus">＋</span>
-              <input name="pair1b" type="text" placeholder="乾燥野菜">
+            <div class="rk-hero">
+              <div class="rk-speech">ケロティと一緒に、よく食べるものから備蓄の仕組みを整えていこう♪</div>
+              <img class="rk-mascot" src="assets/keroty.png" alt="小さな黄色い王冠をつけたカエルのケロティ">
             </div>
-            <div class="pair">
-              <span class="pair-number">2</span>
-              <input name="pair2a" type="text" placeholder="パスタ">
-              <span class="plus">＋</span>
-              <input name="pair2b" type="text" placeholder="サバ缶">
+
+            <div class="rk-card rk-card--mint">
+              <h3 class="rk-card__title">このワークで確認すること</h3>
+              <ul class="rk-check-list">
+                <li>普段よく食べる日持ち食品</li>
+                <li>家族が使いやすいニコイチの組み合わせ</li>
+                <li>今日または近いうちにできる一歩</li>
+              </ul>
             </div>
-            <div class="pair">
-              <span class="pair-number">3</span>
-              <input name="pair3a" type="text" placeholder="レトルトカレー">
-              <span class="plus">＋</span>
-              <input name="pair3b" type="text" placeholder="蒸し大豆">
+
+            <div class="rk-actions single-action">
+              <button class="rk-button rk-button--primary" type="button" id="startButton">ワークをはじめる　›</button>
             </div>
-          </div>
-        </section>
+            <p class="rk-save-status" id="savedMessage" aria-live="polite">入力内容はこの端末に自動保存されます。</p>
+          </section>
 
-        <section class="step" data-step="3">
-          <p class="step-kicker">STEP 4</p>
-          <h2>家族が迷わず使える？</h2>
-          <p class="lead">「自分がいなくても使えるか」を想像して、今の状態に一番近いものを選びましょう。</p>
+          <section class="step" data-step="1">
+            <div class="rk-progress">
+              <div class="rk-progress__meta"><span id="stepLabel">質問 1 / 5</span><span id="stepName">いつもの食品</span></div>
+              <div class="rk-progress__track" aria-hidden="true"><div class="rk-progress__bar" id="progressBar"></div></div>
+            </div>
 
-          <div class="choices">
-            <label class="choice"><input type="radio" name="familyKnows" value="家族も知っている">家族も知っている</label>
-            <label class="choice"><input type="radio" name="familyKnows" value="説明すれば分かると思う">説明すれば分かると思う</label>
-            <label class="choice"><input type="radio" name="familyKnows" value="自分しか知らない">自分しか知らない</label>
-            <label class="choice"><input type="radio" name="familyKnows" value="分からない">分からない</label>
-          </div>
+            <div class="rk-card">
+              <h2 class="rk-question">Q1. 普段よく食べるもの</h2>
+              <p class="rk-question-help">「備蓄専用品」でなくても大丈夫。普段から食べて、なくなると買い足す、日持ちのするものを選びましょう。</p>
 
-          <h3>実際に使える状態を確認</h3>
-          <div class="choices">
-            <label class="choice"><input type="checkbox" name="usable" value="置き場所">家族が置き場所を知っている</label>
-            <label class="choice"><input type="checkbox" name="usable" value="見て分かる">袋や箱を見れば組み合わせが分かる</label>
-            <label class="choice"><input type="checkbox" name="usable" value="停電時">電気・ガスがなくても食べられる</label>
-            <label class="choice"><input type="checkbox" name="usable" value="期限">賞味期限を確認できる</label>
-          </div>
+              <div class="form-row">
+                <label for="familyCount">一緒に備える家族は</label>
+                <div class="number-inline">
+                  <input id="familyCount" name="familyCount" type="number" min="1" max="20" value="2">
+                  <span>人</span>
+                </div>
+              </div>
 
-          <div class="note">
-            <strong>セットにすると、もっと迷いにくくなります</strong>
-            朝ごはんセット、1食分セット、お湯だけセットなど、まとめておく方法もあります。
-          </div>
-          <label for="setIdea"><strong>わが家で作れそうなセット</strong></label>
-          <textarea id="setIdea" name="setIdea" placeholder="例：袋に「お湯だけセット」と書いて、カップ麺と乾燥野菜をまとめる"></textarea>
-        </section>
+              <div class="rk-options">
+                <label class="rk-option"><input type="checkbox" name="foods" value="カップ麺"><span>カップ麺</span></label>
+                <label class="rk-option"><input type="checkbox" name="foods" value="レトルトカレー"><span>レトルトカレー</span></label>
+                <label class="rk-option"><input type="checkbox" name="foods" value="パスタ・麺類"><span>パスタ・麺類</span></label>
+                <label class="rk-option"><input type="checkbox" name="foods" value="缶詰"><span>缶詰</span></label>
+                <label class="rk-option"><input type="checkbox" name="foods" value="お菓子"><span>お菓子</span></label>
+                <label class="rk-option"><input type="checkbox" name="foods" value="スープ"><span>スープ</span></label>
+                <label class="rk-option"><input type="checkbox" name="foods" value="シリアル"><span>シリアル</span></label>
+                <label class="rk-option"><input type="checkbox" name="foods" value="ごはんパック"><span>ごはんパック</span></label>
+              </div>
 
-        <section class="step" data-step="4">
-          <p class="step-kicker">STEP 5</p>
-          <h2>今日の一歩</h2>
-          <p class="lead">今日または近いうちにできそうなことを、1つ選びましょう。</p>
+              <div class="form-row">
+                <label for="otherFood">その他</label>
+                <input id="otherFood" name="otherFood" type="text" placeholder="例：乾パン、フルーツ缶">
+              </div>
+            </div>
+          </section>
 
-          <div class="choices">
-            <label class="choice"><input type="radio" name="nextAction" value="よく食べるものを書き出す">よく食べるものを書き出す</label>
-            <label class="choice"><input type="radio" name="nextAction" value="ニコイチを1つ作る">ニコイチを1つ作る</label>
-            <label class="choice"><input type="radio" name="nextAction" value="セットを1つ作る">セットを1つ作る</label>
-            <label class="choice"><input type="radio" name="nextAction" value="家族に伝える">家族に伝える</label>
-            <label class="choice"><input type="radio" name="nextAction" value="置き場所を見直す">置き場所を見直す</label>
-            <label class="choice"><input type="radio" name="nextAction" value="その他">その他</label>
-          </div>
-          <input class="other-input" name="otherAction" type="text" placeholder="その他を選んだ場合はこちらに入力">
+          <section class="step" data-step="2">
+            <div class="rk-progress">
+              <div class="rk-progress__meta"><span>質問 2 / 5</span><span>3日間の確認</span></div>
+              <div class="rk-progress__track" aria-hidden="true"><div class="rk-progress__bar" style="width:40%"></div></div>
+            </div>
 
-          <div class="result-card" id="resultCard">
-            <h3>わが家の備蓄ワークまとめ</h3>
-            <div id="resultBody">ここまでの回答が表示されます。</div>
-          </div>
+            <div class="rk-card">
+              <h2 class="rk-question">Q2. 3日間を想像してみる</h2>
+              <p class="rk-question-help">選んだ食品だけで、家族が3日続けて過ごせそうでしょうか。</p>
 
-          <div class="final-actions">
-            <button class="btn btn-orange" type="button" id="printButton">PDFを作成して保存</button>
-            <button class="btn btn-quiet" type="button" id="refreshResult">まとめを更新</button>
-            <p id="pdfStatus" aria-live="polite"></p>
-          </div>
-          <p class="saved" id="savedMessage">入力すると自動保存されます。</p>
-          <button class="reset-link" type="button" id="resetButton">すべての回答を消す</button>
-        </section>
+              <div class="rk-options">
+                <label class="rk-option"><input type="radio" name="threeDays" value="十分そう"><span>十分そう</span></label>
+                <label class="rk-option"><input type="radio" name="threeDays" value="少し足りない"><span>少し足りない</span></label>
+                <label class="rk-option"><input type="radio" name="threeDays" value="分からない"><span>まだ分からない</span></label>
+              </div>
+            </div>
 
-        <nav class="nav">
-          <button class="btn btn-quiet" id="prevButton" type="button" disabled>戻る</button>
-          <button class="btn btn-primary" id="nextButton" type="button">次へ</button>
-        </nav>
-      </form>
-    </section>
-  </main>
+            <div class="rk-card rk-card--mint">
+              <h3 class="rk-card__title">食べ物以外も確認</h3>
+              <div class="rk-options">
+                <label class="rk-option"><input type="checkbox" name="essentials" value="飲み水"><span>飲み水がある</span></label>
+                <label class="rk-option"><input type="checkbox" name="essentials" value="加熱手段"><span>電気・ガスが止まった時の加熱手段がある</span></label>
+                <label class="rk-option"><input type="checkbox" name="essentials" value="道具"><span>缶切りなど必要な道具がある</span></label>
+                <label class="rk-option"><input type="checkbox" name="essentials" value="加熱不要"><span>加熱せず食べられるものがある</span></label>
+              </div>
 
-  <section class="print-preview" id="printPreview">
-    <div class="preview-actions">
-      <strong>PDFに保存する内容（プレビュー）</strong>
-      <p id="previewGuide">回答内容を描画して、自動PDFを作成しています。</p>
-      <div class="preview-result" id="autoPdfReady" hidden>
-        <strong>回答入りPDFを作成できました</strong>
-        <p id="pdfResultInfo"></p>
-        <a class="btn btn-primary btn-link" id="pdfDownloadLink" href="#" download="家族で使える備蓄ワーク.pdf">PDFファイルを保存</a>
-      </div>
-      <div class="preview-result is-error" id="printFallbackGroup" hidden>
-        <strong>印刷画面からPDF保存へ切り替えます</strong>
-        <p>下のボタンを押すと印刷画面が開きます。保存先でPDFとして保存してください。</p>
-        <button class="btn btn-orange" type="button" id="openPrintButton">印刷画面を開く</button>
-        <details>
-          <summary>自動PDF作成のエラー詳細</summary>
-          <pre id="pdfErrorDetail"></pre>
-        </details>
-      </div>
-      <button class="btn btn-quiet" type="button" id="closePrintPreview">プレビューを閉じる</button>
-      <p class="saved" id="previewSize"></p>
+              <div class="form-row">
+                <label for="shortage">不足しそうなもの</label>
+                <textarea id="shortage" name="shortage" placeholder="例：野菜が少ない、水が足りないかもしれない"></textarea>
+              </div>
+
+              <div class="form-row">
+                <label for="care">家族に合わせた配慮</label>
+                <textarea id="care" name="care" placeholder="アレルギー、乳幼児、高齢者、持病・服薬など。特になければ空欄で大丈夫です"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" data-step="3">
+            <div class="rk-progress">
+              <div class="rk-progress__meta"><span>質問 3 / 5</span><span>ニコイチ</span></div>
+              <div class="rk-progress__track" aria-hidden="true"><div class="rk-progress__bar" style="width:60%"></div></div>
+            </div>
+
+            <div class="rk-card">
+              <h2 class="rk-question">Q3. わが家の「ニコイチ」</h2>
+              <p class="rk-question-help">よく食べるものに、一緒に使いたいものを組み合わせてみましょう。まずは1組だけでも十分です。</p>
+              <div class="rk-resume">例：カップ麺 ＋ 乾燥野菜 ／ パスタ ＋ サバ缶 ／ レトルトカレー ＋ 蒸し大豆</div>
+
+              <div class="pair-list">
+                <div class="pair">
+                  <span class="pair-number">1</span>
+                  <input name="pair1a" type="text" placeholder="カップ麺">
+                  <span class="plus">＋</span>
+                  <input name="pair1b" type="text" placeholder="乾燥野菜">
+                </div>
+                <div class="pair">
+                  <span class="pair-number">2</span>
+                  <input name="pair2a" type="text" placeholder="パスタ">
+                  <span class="plus">＋</span>
+                  <input name="pair2b" type="text" placeholder="サバ缶">
+                </div>
+                <div class="pair">
+                  <span class="pair-number">3</span>
+                  <input name="pair3a" type="text" placeholder="レトルトカレー">
+                  <span class="plus">＋</span>
+                  <input name="pair3b" type="text" placeholder="蒸し大豆">
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" data-step="4">
+            <div class="rk-progress">
+              <div class="rk-progress__meta"><span>質問 4 / 5</span><span>家族が使える？</span></div>
+              <div class="rk-progress__track" aria-hidden="true"><div class="rk-progress__bar" style="width:80%"></div></div>
+            </div>
+
+            <div class="rk-card">
+              <h2 class="rk-question">Q4. 家族が迷わず使える？</h2>
+              <p class="rk-question-help">「自分がいなくても使えるか」を想像して、今の状態に一番近いものを選びましょう。</p>
+
+              <div class="rk-options">
+                <label class="rk-option"><input type="radio" name="familyKnows" value="家族も知っている"><span>家族も知っている</span></label>
+                <label class="rk-option"><input type="radio" name="familyKnows" value="説明すれば分かると思う"><span>説明すれば分かると思う</span></label>
+                <label class="rk-option"><input type="radio" name="familyKnows" value="自分しか知らない"><span>自分しか知らない</span></label>
+                <label class="rk-option"><input type="radio" name="familyKnows" value="分からない"><span>分からない</span></label>
+              </div>
+            </div>
+
+            <div class="rk-card rk-card--mint">
+              <h3 class="rk-card__title">実際に使える状態を確認</h3>
+              <div class="rk-options">
+                <label class="rk-option"><input type="checkbox" name="usable" value="置き場所"><span>家族が置き場所を知っている</span></label>
+                <label class="rk-option"><input type="checkbox" name="usable" value="見て分かる"><span>袋や箱を見れば組み合わせが分かる</span></label>
+                <label class="rk-option"><input type="checkbox" name="usable" value="停電時"><span>電気・ガスがなくても食べられる</span></label>
+                <label class="rk-option"><input type="checkbox" name="usable" value="期限"><span>賞味期限を確認できる</span></label>
+              </div>
+
+              <div class="form-row">
+                <label for="setIdea">わが家で作れそうなセット</label>
+                <textarea id="setIdea" name="setIdea" placeholder="例：袋に「お湯だけセット」と書いて、カップ麺と乾燥野菜をまとめる"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="step" data-step="5">
+            <div class="rk-progress">
+              <div class="rk-progress__meta"><span>質問 5 / 5</span><span>今日の一歩</span></div>
+              <div class="rk-progress__track" aria-hidden="true"><div class="rk-progress__bar" style="width:100%"></div></div>
+            </div>
+
+            <div class="rk-card">
+              <h2 class="rk-question">Q5. 今日の一歩</h2>
+              <p class="rk-question-help">今日または近いうちにできそうなことを、1つ選びましょう。</p>
+
+              <div class="rk-options">
+                <label class="rk-option"><input type="radio" name="nextAction" value="よく食べるものを書き出す"><span>よく食べるものを書き出す</span></label>
+                <label class="rk-option"><input type="radio" name="nextAction" value="ニコイチを1つ作る"><span>ニコイチを1つ作る</span></label>
+                <label class="rk-option"><input type="radio" name="nextAction" value="セットを1つ作る"><span>セットを1つ作る</span></label>
+                <label class="rk-option"><input type="radio" name="nextAction" value="家族に伝える"><span>家族に伝える</span></label>
+                <label class="rk-option"><input type="radio" name="nextAction" value="置き場所を見直す"><span>置き場所を見直す</span></label>
+                <label class="rk-option"><input type="radio" name="nextAction" value="その他"><span>その他</span></label>
+              </div>
+
+              <div class="form-row">
+                <label for="otherAction">その他を選んだ場合</label>
+                <input id="otherAction" name="otherAction" type="text" placeholder="その他の一歩を入力">
+              </div>
+            </div>
+          </section>
+
+          <section class="step" data-step="6">
+            <p class="rk-kicker">結果画面</p>
+            <h2 class="rk-title"><span class="rk-sparkles">✦</span> おつかれさまでした！ <span class="rk-sparkles">✦</span></h2>
+
+            <div class="rk-result-hero">
+              <img class="rk-mascot" src="assets/keroty.png" alt="小さな黄色い王冠をつけたカエルのケロティ">
+              <div class="rk-speech">家族が迷わず食べられる形に、少しずつ近づいているケロ！</div>
+            </div>
+
+            <div class="rk-card rk-card--mint">
+              <h3 class="rk-card__title">ステージ2-5｜ワーク① 家族で使える備蓄ワークまとめ</h3>
+              <div class="result-summary" id="resultBody">ここまでの回答が表示されます。</div>
+            </div>
+
+            <div class="rk-actions">
+              <button class="rk-button" type="button" id="reviewButton">回答を見直す</button>
+              <button class="rk-button rk-button--primary" type="button" id="savePdfButton">PDFで保存　›</button>
+            </div>
+            <div class="pdf-note" id="pdfStatus" aria-live="polite">
+              PDF保存は共通モジュールを使います。現在の共通PDFは診断結果型の出力なので、このワークの自由記入内容は要約して保存します。
+            </div>
+            <button class="rk-danger-link" type="button" id="resetButton">保存内容を消して最初からやり直す</button>
+          </section>
+
+          <nav class="rk-actions" id="navButtons">
+            <button class="rk-button" id="prevButton" type="button">戻る</button>
+            <button class="rk-button rk-button--primary" id="nextButton" type="button">次へ　›</button>
+          </nav>
+        </form>
+      </main>
     </div>
-    <section class="pdf-preview" id="printSheet"></section>
-  </section>
+  </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="pdf/vendor/pdf-lib.min.js"></script>
+  <script src="components/rakukaji-ui.js"></script>
+  <script src="data/rakukaji-storage.js"></script>
+  <script src="pdf/pdf-save-adapter.js"></script>
   <script>
     (() => {
-      const STORAGE_KEY = "kazoku-bichiku-work-v1";
+      "use strict";
+
+      const APP_TITLE = "ステージ2-5｜ワーク①家族で使える備蓄ワーク";
+      const STORAGE_KEY = "kazoku-bichiku-stage2-5-work1";
       const form = document.getElementById("workForm");
       const steps = [...document.querySelectorAll(".step")];
-      const names = ["いつもの食品", "3日間の確認", "ニコイチ", "家族が使える？", "今日の一歩"];
-      const progressBar = document.getElementById("progressBar");
-      const stepLabel = document.getElementById("stepLabel");
-      const stepName = document.getElementById("stepName");
+      const navButtons = document.getElementById("navButtons");
       const prevButton = document.getElementById("prevButton");
       const nextButton = document.getElementById("nextButton");
-      const resultBody = document.getElementById("resultBody");
+      const headerBack = document.getElementById("headerBack");
       const savedMessage = document.getElementById("savedMessage");
+      const resultBody = document.getElementById("resultBody");
+      const pdfStatus = document.getElementById("pdfStatus");
       let current = 0;
       let saveTimer;
-      let currentPdfUrl = "";
+
+      const UI = window.RakukajiUI;
+      const storage = window.RakukajiStorage.create({
+        key: STORAGE_KEY,
+        onSaved(message) {
+          if (savedMessage) savedMessage.textContent = message;
+        },
+        onError(message, error) {
+          console.error("[保存]", error);
+          if (savedMessage) savedMessage.textContent = message;
+        }
+      });
 
       const selected = (name) =>
         [...form.querySelectorAll(`[name="${name}"]:checked`)].map(el => el.value);
-
       const one = (name) => form.querySelector(`[name="${name}"]:checked`)?.value || "";
       const value = (name) => form.elements[name]?.value?.trim() || "";
-      const esc = (text) => String(text || "").replace(/[&<>"']/g, ch => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-      })[ch]);
+      const esc = (text) => UI.escapeHtml(text || "");
 
       function serialize() {
         const data = {};
@@ -713,53 +445,39 @@
           if (data[key]) data[key] = [].concat(data[key], val);
           else data[key] = val;
         });
+        data.current = current;
         return data;
       }
 
       function restore() {
-        try {
-          const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-          Object.entries(data).forEach(([name, saved]) => {
-            const fields = [...form.querySelectorAll(`[name="${CSS.escape(name)}"]`)];
-            if (!fields.length) return;
-            const values = [].concat(saved);
-            fields.forEach(field => {
-              if (field.type === "checkbox" || field.type === "radio") {
-                field.checked = values.includes(field.value);
-              } else {
-                field.value = saved;
-              }
-            });
+        const data = storage.load();
+        if (!data) return;
+        Object.entries(data).forEach(([name, saved]) => {
+          if (name === "current") return;
+          const fields = [...form.querySelectorAll(`[name="${CSS.escape(name)}"]`)];
+          if (!fields.length) return;
+          const values = [].concat(saved);
+          fields.forEach(field => {
+            if (field.type === "checkbox" || field.type === "radio") {
+              field.checked = values.includes(field.value);
+            } else {
+              field.value = saved;
+            }
           });
-        } catch (_) {}
+        });
+        current = Math.max(0, Math.min(steps.length - 1, Number(data.current || 0)));
+        if (savedMessage) savedMessage.textContent = "前回の入力内容を読み込みました。";
       }
 
       function save() {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(serialize()));
-          savedMessage.textContent = "この端末に自動保存しました。";
-        } catch (_) {
-          savedMessage.textContent = "保存できませんでした。印刷・PDF保存をご利用ください。";
-        }
+        storage.save(serialize());
       }
 
       function scheduleSave() {
         clearTimeout(saveTimer);
-        savedMessage.textContent = "保存中…";
+        if (savedMessage) savedMessage.textContent = "保存中…";
         saveTimer = setTimeout(save, 250);
-        if (current === 4) buildResult();
-      }
-
-      function showStep(index) {
-        current = Math.max(0, Math.min(steps.length - 1, index));
-        steps.forEach((step, i) => step.classList.toggle("active", i === current));
-        stepLabel.textContent = `STEP ${current + 1} / ${steps.length}`;
-        stepName.textContent = names[current];
-        progressBar.style.width = `${((current + 1) / steps.length) * 100}%`;
-        prevButton.disabled = current === 0;
-        nextButton.style.visibility = current === steps.length - 1 ? "hidden" : "visible";
-        if (current === 4) buildResult();
-        document.querySelector(".workspace").scrollIntoView({ behavior: "smooth", block: "start" });
+        if (current === 6) buildResult();
       }
 
       function getPairs() {
@@ -767,333 +485,138 @@
           .filter(pair => pair[0] || pair[1]);
       }
 
-      function buildResult() {
-        const family = value("familyCount") || "—";
+      function summary() {
         const foods = [...selected("foods"), value("otherFood")].filter(Boolean);
         const pairs = getPairs();
         const usable = selected("usable");
+        const essentials = selected("essentials");
         const action = one("nextAction") === "その他"
           ? (value("otherAction") || "その他の一歩を考える")
           : (one("nextAction") || "まだ選ばれていません");
-        const essentials = selected("essentials");
-        const checkItems = [
+        const missing = [
           ["飲み水", "飲み水"],
           ["加熱手段", "停電時の加熱手段"],
           ["道具", "必要な道具"],
           ["加熱不要", "加熱せず食べられる食品"]
-        ];
-        const remaining = checkItems.filter(([key]) => !essentials.includes(key)).map(([, label]) => label);
+        ].filter(([key]) => !essentials.includes(key)).map(([, label]) => label);
+        const score = Math.min(100, Math.round(((usable.length + essentials.length + Math.min(pairs.length, 3)) / 11) * 100));
+        return {
+          family: value("familyCount") || "—",
+          foods,
+          pairs,
+          usable,
+          essentials,
+          missing,
+          action,
+          score,
+          threeDays: one("threeDays") || "未回答",
+          familyKnows: one("familyKnows") || "未回答",
+          shortage: value("shortage") || "記入なし",
+          care: value("care") || "記入なし",
+          setIdea: value("setIdea") || "記入なし"
+        };
+      }
 
-        const pairHtml = pairs.length
-          ? pairs.map(p => `<li>${esc(p[0] || "（未記入）")} ＋ ${esc(p[1] || "（未記入）")}</li>`).join("")
+      function buildResult() {
+        const data = summary();
+        const pairHtml = data.pairs.length
+          ? data.pairs.map(p => `<li>${esc(p[0] || "（未記入）")} ＋ ${esc(p[1] || "（未記入）")}</li>`).join("")
           : "<li>まだ作られていません。まずは1組からで大丈夫です。</li>";
-
         resultBody.innerHTML = `
-          <p><strong>${esc(family)}人分</strong>の備えを考えました。</p>
-          <p>普段よく食べるもの：${foods.length ? foods.map(esc).join("、") : "まだ選ばれていません"}</p>
-          <p><strong>わが家のニコイチ（${pairs.length}組）</strong></p>
-          <ul class="result-list">${pairHtml}</ul>
-          <p>家族の状態：${esc(one("familyKnows") || "まだ選ばれていません")}</p>
-          <p>使いやすさチェック：${usable.length} / 4</p>
-          ${remaining.length ? `<p>これから確認したいこと：${remaining.map(esc).join("、")}</p>` : "<p>食べ物以外の備えも、ひと通り確認できました。</p>"}
-          <div class="action-result">今日の一歩：${esc(action)}</div>
-        `;
-        buildPrintSheet({ family, foods, pairs, action, usable, remaining });
-      }
-
-      function buildPrintSheet(summary) {
-        const shortage = value("shortage") || "記入なし";
-        const care = value("care") || "記入なし";
-        const setIdea = value("setIdea") || "記入なし";
-        const pairLines = summary.pairs.length
-          ? summary.pairs.map(p => `<li>${esc(p[0] || "（未記入）")} ＋ ${esc(p[1] || "（未記入）")}</li>`).join("")
-          : "<li>記入なし</li>";
-        document.getElementById("printSheet").innerHTML = `
-          <h1>家族で使える備蓄ワーク</h1>
-          <p>家族：${esc(summary.family)}人　／　作成日：${new Date().toLocaleDateString("ja-JP")}</p>
-          <h2>普段よく食べるもの</h2>
-          <div class="print-box">${summary.foods.length ? summary.foods.map(esc).join("、") : "記入なし"}</div>
-          <h2>3日間の確認</h2>
-          <div class="print-box">
-            <p>3日分：${esc(one("threeDays") || "未回答")}</p>
-            <p>不足しそうなもの：${esc(shortage)}</p>
-            <p>家族への配慮：${esc(care)}</p>
-          </div>
-          <h2>わが家のニコイチ</h2>
-          <div class="print-box"><ul>${pairLines}</ul></div>
-          <h2>家族が使える状態</h2>
-          <div class="print-box">
-            <p>${esc(one("familyKnows") || "未回答")}</p>
-            <p>できていること：${summary.usable.length ? summary.usable.map(esc).join("、") : "記入なし"}</p>
-            <p>作れそうなセット：${esc(setIdea)}</p>
-          </div>
-          <h2>今日の一歩</h2>
-          <div class="print-box"><strong>${esc(summary.action)}</strong></div>
-          <p>自分だけが分かる備蓄から、家族みんなが使える備蓄へ。まずは1つから始めましょう。</p>
+          <p><strong>${esc(data.family)}人分</strong>の備えを考えました。</p>
+          <p>普段よく食べるもの：${data.foods.length ? data.foods.map(esc).join("、") : "まだ選ばれていません"}</p>
+          <p><strong>わが家のニコイチ（${data.pairs.length}組）</strong></p>
+          <ul class="rk-result-list">${pairHtml}</ul>
+          <p>3日分の見通し：${esc(data.threeDays)}</p>
+          <p>家族の状態：${esc(data.familyKnows)}</p>
+          <p>使いやすさチェック：${data.usable.length} / 4</p>
+          ${data.missing.length ? `<p>これから確認したいこと：${data.missing.map(esc).join("、")}</p>` : "<p>食べ物以外の備えも、ひと通り確認できました。</p>"}
+          <p><strong>今日の一歩：</strong>${esc(data.action)}</p>
         `;
       }
 
-      async function waitForRenderedPreview() {
-        const printSheet = document.getElementById("printSheet");
-        if (document.fonts?.ready) await document.fonts.ready;
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        const rect = printSheet.getBoundingClientRect();
-        const textLength = printSheet.innerText.trim().length;
-        if (rect.width < 100 || rect.height < 100 || textLength < 50) {
-          throw new Error(
-            `PDF描画対象が空です（${Math.round(rect.width)}×${Math.round(rect.height)}px、${textLength}文字）`
-          );
-        }
-        return { rect, textLength };
+      function pdfData() {
+        const data = summary();
+        const pairs = data.pairs.length
+          ? data.pairs.map(p => `${p[0] || "（未記入）"} ＋ ${p[1] || "（未記入）"}`)
+          : ["ニコイチはまだ未記入です"];
+        return {
+          score: data.score,
+          badge: data.score >= 70 ? "家族で使える備蓄に近づいています" : "まずは1つ整える段階です",
+          message: `${data.family}人分の備蓄について、動画「止まりにくい備蓄運用」の後に確認しました。今日の一歩：${data.action}`,
+          strengths: [
+            `普段よく食べるもの：${data.foods.length ? data.foods.join("、") : "未記入"}`,
+            `3日分の見通し：${data.threeDays}`,
+            `家族の状態：${data.familyKnows}`,
+            ...pairs
+          ],
+          improvements: [
+            `不足しそうなもの：${data.shortage}`,
+            `家族への配慮：${data.care}`,
+            `作れそうなセット：${data.setIdea}`
+          ],
+          recommendations: data.missing.length
+            ? [...data.missing.map(item => `${item}を確認する`), data.action]
+            : [data.action, "家族に置き場所と組み合わせを伝える"]
+        };
       }
 
-      function inspectCanvas(canvas) {
-        if (!canvas || canvas.width < 100 || canvas.height < 100) {
-          throw new Error(
-            `Canvasのサイズが不正です（${canvas?.width || 0}×${canvas?.height || 0}px）`
-          );
-        }
-        const probe = document.createElement("canvas");
-        probe.width = 96;
-        probe.height = Math.max(
-          96,
-          Math.min(320, Math.round(canvas.height * (probe.width / canvas.width)))
-        );
-        const context = probe.getContext("2d", { willReadFrequently: true });
-        context.drawImage(canvas, 0, 0, probe.width, probe.height);
-        const pixels = context.getImageData(0, 0, probe.width, probe.height).data;
-        let visiblePixels = 0;
-        for (let i = 0; i < pixels.length; i += 4) {
-          if (
-            pixels[i + 3] > 0 &&
-            (pixels[i] < 242 || pixels[i + 1] < 242 || pixels[i + 2] < 242)
-          ) {
-            visiblePixels += 1;
-          }
-        }
-        if (visiblePixels < 20) {
-          throw new Error(
-            `Canvasが白紙です（${canvas.width}×${canvas.height}px、描画画素 ${visiblePixels}）`
-          );
-        }
-        return visiblePixels;
+      function showStep(index) {
+        current = Math.max(0, Math.min(steps.length - 1, index));
+        steps.forEach((step, i) => step.classList.toggle("active", i === current));
+        const isTop = current === 0;
+        const isResult = current === steps.length - 1;
+        navButtons.hidden = isTop || isResult;
+        prevButton.disabled = current <= 1;
+        headerBack.hidden = isTop;
+        if (current === 6) buildResult();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        save();
       }
 
-      nextButton.addEventListener("click", () => showStep(current + 1));
-      prevButton.addEventListener("click", () => showStep(current - 1));
-      form.addEventListener("input", scheduleSave);
-      form.addEventListener("change", scheduleSave);
-      document.getElementById("refreshResult").addEventListener("click", buildResult);
-      document.getElementById("printButton").addEventListener("click", async () => {
-        const button = document.getElementById("printButton");
-        const status = document.getElementById("pdfStatus");
-        const printSheet = document.getElementById("printSheet");
-        const printPreview = document.getElementById("printPreview");
-        const previewSize = document.getElementById("previewSize");
-        const previewGuide = document.getElementById("previewGuide");
-        const autoPdfReady = document.getElementById("autoPdfReady");
-        const pdfResultInfo = document.getElementById("pdfResultInfo");
-        const pdfDownloadLink = document.getElementById("pdfDownloadLink");
-        const printFallbackGroup = document.getElementById("printFallbackGroup");
-        const pdfErrorDetail = document.getElementById("pdfErrorDetail");
+      async function savePdf() {
         buildResult();
+        const button = document.getElementById("savePdfButton");
+        const date = new Date();
+        const stamp = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
         button.disabled = true;
-        status.classList.remove("is-error");
-        status.textContent = "回答入りPDFを作成しています…";
-        previewGuide.textContent = "回答内容を描画して、自動PDFを作成しています。";
-        autoPdfReady.hidden = true;
-        printFallbackGroup.hidden = true;
-        pdfErrorDetail.textContent = "";
-        printPreview.classList.add("is-visible");
+        pdfStatus.textContent = "共通PDFモジュールでPDFを作成しています。少しお待ちください。";
         try {
-          const { rect, textLength } = await waitForRenderedPreview();
-          previewSize.textContent =
-            `描画確認済み：${Math.round(rect.width)}×${Math.round(rect.height)}px、${textLength}文字`;
-          printPreview.scrollIntoView({ behavior: "smooth", block: "start" });
-
-          if (typeof window.html2pdf !== "function") {
-            throw new Error("自動PDFライブラリを読み込めませんでした");
-          }
-
-          // html2canvasを呼ぶ直前にも、描画対象が0×0でないことを確認する。
-          const captureRect = printSheet.getBoundingClientRect();
-          const captureWidth = Math.ceil(
-            Math.max(captureRect.width, printSheet.scrollWidth)
-          );
-          const captureHeight = Math.ceil(
-            Math.max(captureRect.height, printSheet.scrollHeight)
-          );
-          if (
-            captureRect.width < 100 ||
-            captureRect.height < 100 ||
-            captureWidth < 100 ||
-            captureHeight < 100
-          ) {
-            throw new Error(
-              `html2canvas実行直前の描画対象が空です（` +
-              `rect ${Math.round(captureRect.width)}×${Math.round(captureRect.height)}px、` +
-              `scroll ${captureWidth}×${captureHeight}px）`
-            );
-          }
-          console.info("[PDF] html2canvas実行直前の描画対象", {
-            rectWidth: captureRect.width,
-            rectHeight: captureRect.height,
-            scrollWidth: captureWidth,
-            scrollHeight: captureHeight
+          const result = await window.RakukajiPdf.save({
+            title: APP_TITLE,
+            fileName: `${APP_TITLE}_${stamp}.pdf`,
+            data: pdfData(),
+            onSuccess(message) { pdfStatus.textContent = message; },
+            onFallback(message) { pdfStatus.textContent = message; }
           });
-
-          // 端末ごとのCanvas上限を超えないように、表示サイズから倍率を調整する。
-          const safePixelBudget = 8000000;
-          const scale = Math.max(
-            1,
-            Math.min(2, Math.sqrt(safePixelBudget / (captureWidth * captureHeight)))
-          );
-          const options = {
-            margin: 10,
-            filename: "家族で使える備蓄ワーク.pdf",
-            image: { type: "jpeg", quality: 0.92 },
-            html2canvas: {
-              scale: Number(scale.toFixed(2)),
-              useCORS: true,
-              backgroundColor: "#ffffff",
-              logging: true,
-              width: captureWidth,
-              height: captureHeight,
-              windowWidth: Math.max(window.innerWidth, captureWidth),
-              windowHeight: Math.max(window.innerHeight, captureHeight),
-              onclone: (clonedDocument) => {
-                const clonedPreview = clonedDocument.getElementById("printPreview");
-                const clonedSheet = clonedDocument.getElementById("printSheet");
-                if (clonedPreview) {
-                  Object.assign(clonedPreview.style, {
-                    display: "block",
-                    visibility: "visible",
-                    position: "static",
-                    left: "0",
-                    top: "0"
-                  });
-                }
-                if (clonedSheet) {
-                  Object.assign(clonedSheet.style, {
-                    display: "block",
-                    visibility: "visible",
-                    position: "relative",
-                    left: "0",
-                    top: "0",
-                    width: `${captureWidth}px`,
-                    maxWidth: "none"
-                  });
-                }
-              }
-            },
-            jsPDF: {
-              unit: "mm",
-              format: "a4",
-              orientation: "portrait"
-            },
-            pagebreak: { mode: ["css", "legacy"] }
-          };
-
-          previewGuide.textContent = "プレビューの描画内容を確認しています。";
-          let visiblePixels = 0;
-          let canvasSize = "";
-          const pdfBlob = await window.html2pdf()
-            .set(options)
-            .from(printSheet)
-            .toCanvas()
-            .get("canvas", (canvas) => {
-              visiblePixels = inspectCanvas(canvas);
-              canvasSize = `${canvas.width}×${canvas.height}px`;
-              console.info("[PDF] Canvas描画確認", {
-                canvasSize,
-                visiblePixels
-              });
-            })
-            .toPdf()
-            .outputPdf("blob")
-            .thenExternal(value => value);
-          if (!(pdfBlob instanceof Blob) || pdfBlob.size < 1000) {
-            throw new Error(
-              `PDFデータが不正です（${pdfBlob?.size || 0} bytes）`
-            );
-          }
-
-          if (currentPdfUrl) URL.revokeObjectURL(currentPdfUrl);
-          currentPdfUrl = URL.createObjectURL(pdfBlob);
-          pdfDownloadLink.href = currentPdfUrl;
-          pdfResultInfo.textContent =
-            `${Math.ceil(pdfBlob.size / 1024)}KB、Canvas ${canvasSize}、描画画素 ${visiblePixels}。` +
-            "プレビューと同じ回答内容です。";
-          autoPdfReady.hidden = false;
-          previewGuide.textContent =
-            "自動PDFを作成しました。下のボタンから保存してください。";
-          status.textContent =
-            "回答入りPDFを作成しました。プレビュー下の「PDFファイルを保存」を押してください。";
+          console.info("[PDF] 共通PDFモジュール結果", result);
         } catch (error) {
-          const errorMessage = error?.message || String(error);
-          const detail = [
-            `${error?.name || "Error"}: ${errorMessage}`,
-            `User-Agent: ${navigator.userAgent}`
-          ].join("\n");
-          console.error("[PDF] 自動PDF作成に失敗。印刷方式へ切り替えます", error);
-          status.classList.add("is-error");
-          status.textContent =
-            "自動PDF作成に失敗しました。印刷画面からPDFとして保存できます。";
-          previewGuide.textContent =
-            "自動PDF作成に失敗しました。印刷画面方式へ切り替えました。";
-          pdfErrorDetail.textContent = detail;
-          printFallbackGroup.hidden = false;
-          alert(
-            `自動PDF作成に失敗しました。\n` +
-            `下のボタンを押すと印刷画面が開きます。保存先でPDFとして保存してください。\n\n` +
-            `原因: ${errorMessage}`
-          );
+          console.error("[PDF] 共通PDFモジュールで保存できませんでした", error);
+          pdfStatus.textContent = "PDF保存に失敗しました。共通PDFモジュール側の対応が必要です。";
         } finally {
           button.disabled = false;
         }
-      });
+      }
 
-      document.getElementById("openPrintButton").addEventListener("click", async () => {
-        buildResult();
-        const printSheet = document.getElementById("printSheet");
-        try {
-          if (document.fonts?.ready) await document.fonts.ready;
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          const sheetRect = printSheet.getBoundingClientRect();
-          const textLength = printSheet.innerText.trim().length;
-          if (sheetRect.width < 100 || sheetRect.height < 100 || textLength < 50) {
-            throw new Error(
-              `印刷対象が空です（${Math.round(sheetRect.width)}×${Math.round(sheetRect.height)}px、${textLength}文字）`
-            );
-          }
-          console.info("[PDF] 描画済みDOMをwindow.print()へ渡します", {
-            width: sheetRect.width,
-            height: sheetRect.height,
-            textLength
-          });
-          window.print();
-        } catch (error) {
-          console.error("[PDF] 印刷画面を開けませんでした", error);
-          alert(`印刷画面を開けませんでした。\n${error?.message || error}`);
-        }
-      });
-
-      document.getElementById("closePrintPreview").addEventListener("click", () => {
-        document.getElementById("printPreview").classList.remove("is-visible");
-        document.getElementById("pdfStatus").textContent = "";
-      });
+      document.getElementById("startButton").addEventListener("click", () => showStep(1));
+      document.getElementById("reviewButton").addEventListener("click", () => showStep(1));
+      document.getElementById("savePdfButton").addEventListener("click", savePdf);
+      nextButton.addEventListener("click", () => showStep(current + 1));
+      prevButton.addEventListener("click", () => showStep(current - 1));
+      headerBack.addEventListener("click", () => showStep(current === 6 ? 5 : current - 1));
+      form.addEventListener("input", scheduleSave);
+      form.addEventListener("change", scheduleSave);
       document.getElementById("resetButton").addEventListener("click", () => {
-        if (!confirm("すべての回答を消しますか？")) return;
+        if (!confirm("保存した入力内容を消して、最初からやり直しますか？")) return;
         form.reset();
         form.elements.familyCount.value = 2;
-        localStorage.removeItem(STORAGE_KEY);
-        buildResult();
-        savedMessage.textContent = "回答を消しました。";
+        storage.clear();
+        if (savedMessage) savedMessage.textContent = "保存内容を消去しました。";
+        showStep(0);
       });
 
       restore();
-      showStep(0);
+      showStep(current);
     })();
   </script>
 </body>
